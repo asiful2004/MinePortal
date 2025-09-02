@@ -344,7 +344,12 @@ export default function AdminDashboard() {
         headers: getAuthHeaders(),
       });
       if (!response.ok) throw new Error('Failed to delete team member');
-      return response.json();
+      // For DELETE requests, we don't always need to parse JSON
+      try {
+        return await response.json();
+      } catch {
+        return { success: true };
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/team'] });

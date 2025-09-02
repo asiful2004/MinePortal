@@ -58,6 +58,7 @@ export interface IStorage {
   getActiveTeamMembers(): Promise<TeamMember[]>;
   createTeamMember(member: InsertTeamMember): Promise<TeamMember>;
   updateTeamMember(id: string, member: Partial<InsertTeamMember>): Promise<TeamMember>;
+  deleteTeamMember(id: string): Promise<void>;
 
   // Voting
   getActiveVotingSites(): Promise<VotingSite[]>;
@@ -249,6 +250,11 @@ export class DatabaseStorage implements IStorage {
       .where(eq(teamMembers.id, id))
       .returning();
     return updated;
+  }
+
+  async deleteTeamMember(id: string): Promise<void> {
+    const result = await db.delete(teamMembers).where(eq(teamMembers.id, id));
+    console.log(`Deleted ${result.rowCount || 0} team member(s) with ID: ${id}`);
   }
 
   // Voting

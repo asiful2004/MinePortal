@@ -314,6 +314,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/admin/team/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteTeamMember(id);
+      res.json({ message: 'Team member deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting team member:', error);
+      res.status(500).json({ message: 'Failed to delete team member' });
+    }
+  });
+
   // Voting sites management routes
   app.get('/api/admin/voting-sites', authenticateToken, async (req, res) => {
     try {
