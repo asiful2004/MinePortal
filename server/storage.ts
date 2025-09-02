@@ -221,7 +221,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteSeason(id: string): Promise<void> {
-    await db.delete(seasons).where(eq(seasons.id, id));
+    const result = await db.delete(seasons).where(eq(seasons.id, id));
+    console.log(`Deleted ${result.rowCount || 0} season(s) with ID: ${id}`);
   }
 
   // Team
