@@ -409,7 +409,12 @@ export default function AdminDashboard() {
         headers: getAuthHeaders(),
       });
       if (!response.ok) throw new Error('Failed to delete voting site');
-      return response.json();
+      // For DELETE requests, we don't always need to parse JSON
+      try {
+        return await response.json();
+      } catch {
+        return { success: true };
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/voting-sites'] });
@@ -469,7 +474,12 @@ export default function AdminDashboard() {
         headers: getAuthHeaders(),
       });
       if (!response.ok) throw new Error('Failed to delete gallery image');
-      return response.json();
+      // For DELETE requests, we don't always need to parse JSON
+      try {
+        return await response.json();
+      } catch {
+        return { success: true };
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/gallery'] });
@@ -527,7 +537,12 @@ export default function AdminDashboard() {
         headers: getAuthHeaders(),
       });
       if (!response.ok) throw new Error('Failed to delete store item');
-      return response.json();
+      // For DELETE requests, we don't always need to parse JSON
+      try {
+        return await response.json();
+      } catch {
+        return { success: true };
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/store'] });
