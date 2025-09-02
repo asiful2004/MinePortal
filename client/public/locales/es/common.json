@@ -1,0 +1,235 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "news": "Noticias",
+    "vote": "Votar",
+    "season": "Temporada",
+    "about": "Acerca de",
+    "store": "Tienda"
+  },
+  "server": {
+    "name": "SkyBlock Legends",
+    "tagline": "Servidor Premium de Minecraft",
+    "description": "Experimenta la aventura definitiva de SkyBlock con islas personalizadas, misiones épicas y recompensas legendarias. Únete a miles de jugadores en el servidor de Minecraft más avanzado.",
+    "ip": {
+      "label": "IP del Servidor",
+      "copy": "Copiar",
+      "copied": "¡Copiado!",
+      "copied_desc": "IP del servidor copiada al portapapeles"
+    },
+    "players": {
+      "label": "Jugadores En Línea"
+    },
+    "status": {
+      "label": "Estado del Servidor",
+      "online": "En Línea",
+      "offline": "Desconectado",
+      "loading": "Cargando..."
+    }
+  },
+  "cta": {
+    "join": "Únete al Servidor Ahora",
+    "discord": "Únete a Discord"
+  },
+  "news": {
+    "title": "Últimas Noticias",
+    "subtitle": "Mantente actualizado con los últimos desarrollos del servidor y eventos",
+    "page_subtitle": "Mantente informado con los últimos desarrollos, eventos y destacados de la comunidad de SkyBlock Legends",
+    "readmore": "Leer Más",
+    "viewall": "Ver Todas las Noticias",
+    "empty": "No hay artículos de noticias disponibles",
+    "featured": "Destacado",
+    "category": {
+      "update": "Actualización",
+      "event": "Evento",
+      "community": "Comunidad",
+      "tournament": "Torneo",
+      "maintenance": "Mantenimiento"
+    }
+  },
+  "season": {
+    "title": "Temporadas del Servidor",
+    "subtitle": "Experimenta la evolución de SkyBlock Legends a través de nuestras actualizaciones estacionales épicas",
+    "current": {
+      "label": "Temporada Actual"
+    },
+    "active": "Activa",
+    "explore": "Explorar Temporada",
+    "start_playing": "Comenzar a Jugar",
+    "guide": "Guía de Temporada",
+    "history": "Historia de Temporadas",
+    "empty": "No hay temporadas disponibles",
+    "video": {
+      "placeholder": "Tráiler de Temporada"
+    }
+  },
+  "gallery": {
+    "title": "Galería de Momentos Épicos",
+    "subtitle": "Presencia los logros y construcciones más increíbles de nuestra comunidad",
+    "empty": "No hay imágenes de galería disponibles"
+  },
+  "team": {
+    "title": "Conoce a Nuestro Equipo Legendario",
+    "subtitle": "Los desarrolladores apasionados, administradores y líderes de la comunidad que hacen posible SkyBlock Legends",
+    "meetfull": "Conocer a Todo el Equipo",
+    "empty": "No hay miembros del equipo disponibles",
+    "roles": {
+      "founder": "Fundador",
+      "admin": "Administrador",
+      "moderator": "Moderador",
+      "developer": "Desarrollador",
+      "builder": "Constructor",
+      "supporter": "Partidario"
+    }
+  },
+  "vote": {
+    "title": "Vota por SkyBlock Legends",
+    "subtitle": "Apoya nuestro servidor y gana recompensas increíbles votando en estas listas de servidores de Minecraft",
+    "benefits": {
+      "title": "Beneficios de Votar",
+      "diamonds": "500 Diamantes por voto",
+      "diamonds.desc": "Agregados instantáneamente a tu cuenta",
+      "exp": "XP Doble por 1 hora",
+      "exp.desc": "Sube de nivel más rápido con experiencia bonus",
+      "crate": "Llave de Caja de Voto",
+      "crate.desc": "Desbloquea objetos exclusivos y recompensas"
+    },
+    "sites": {
+      "title": "Vota en Estos Sitios",
+      "empty": "No hay sitios de votación disponibles"
+    },
+    "tutorial": {
+      "title": "Tutorial de Cómo Votar",
+      "watch": "Ver Tutorial"
+    },
+    "site": {
+      "reward": "+500 Diamantes"
+    }
+  },
+  "store": {
+    "title": "Tienda SkyBlock",
+    "subtitle": "Apoya el servidor y mejora tu experiencia de juego con rangos exclusivos, objetos y cosméticos",
+    "ranks": {
+      "title": "Rangos VIP",
+      "empty": "No hay rangos disponibles"
+    },
+    "items": {
+      "title": "Objetos y Cosméticos"
+    },
+    "popular": "POPULAR",
+    "onetime": "Compra única",
+    "purchase": "Comprar",
+    "buy_now": "Comprar Ahora",
+    "notice": {
+      "title": "Aviso Importante",
+      "description": "Todas las compras apoyan el desarrollo y mantenimiento del servidor. Los objetos se entregan instantáneamente tras el pago exitoso. Para soporte, contacta a nuestro equipo en Discord."
+    }
+  },
+  "about": {
+    "tagline": "Experiencia Premium de Minecraft SkyBlock desde 2023",
+    "story": {
+      "title": "Nuestra Historia",
+      "part1": "SkyBlock Legends nació de una pasión por crear la experiencia definitiva de Minecraft SkyBlock. Fundado en 2023 por un equipo de desarrolladores dedicados y entusiastas de Minecraft, nos propusimos revolucionar el juego tradicional de SkyBlock con características innovadoras, mecánicas personalizadas y una experiencia increíble impulsada por la comunidad.",
+      "part2": "Lo que comenzó como un pequeño servidor para amigos se ha convertido en uno de los servidores de SkyBlock más avanzados del mundo, albergando a miles de jugadores que se embarcan en aventuras épicas, construyen islas increíbles y forjan amistades duraderas. Nuestro compromiso con la calidad, la equidad y la innovación impulsa todo lo que hacemos."
+    }
+  },
+  "footer": {
+    "description": "La experiencia definitiva de supervivencia en Minecraft con plugins personalizados y una comunidad increíble.",
+    "links": {
+      "title": "Enlaces Rápidos"
+    },
+    "server": {
+      "title": "Información del Servidor",
+      "ip": "IP",
+      "version": "Versión",
+      "players": "Jugadores"
+    },
+    "contact": {
+      "title": "Contacto",
+      "support": "Soporte",
+      "discord": "Discord",
+      "email": "Email"
+    },
+    "copyright": "© 2024 SkyBlock Legends. Todos los derechos reservados.",
+    "legal": {
+      "privacy": "Política de Privacidad",
+      "terms": "Términos de Servicio"
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Panel de Administración",
+      "subtitle": "Inicia sesión para gestionar el contenido del servidor",
+      "username": "Nombre de Usuario",
+      "password": "Contraseña",
+      "username_placeholder": "Ingresa tu nombre de usuario",
+      "password_placeholder": "Ingresa tu contraseña",
+      "login": "Iniciar Sesión",
+      "logging_in": "Iniciando sesión...",
+      "success": "Inicio de sesión exitoso",
+      "welcome": "Bienvenido al panel de administración",
+      "error": "Error de inicio de sesión",
+      "invalid_credentials": "Nombre de usuario o contraseña inválidos",
+      "default_credentials": "Credenciales por defecto para desarrollo:"
+    },
+    "dashboard": {
+      "title": "Panel de Administración",
+      "welcome": "Bienvenido de vuelta, {{name}}"
+    },
+    "logout": "Cerrar Sesión",
+    "loading": "Cargando panel de administración...",
+    "tabs": {
+      "news": "Noticias",
+      "seasons": "Temporadas",
+      "team": "Equipo",
+      "voting": "Votación",
+      "gallery": "Galería",
+      "store": "Tienda"
+    },
+    "news": {
+      "title": "Gestión de Noticias",
+      "create": "Crear Artículo",
+      "created": "Artículo de noticias creado exitosamente",
+      "updated": "Artículo de noticias actualizado exitosamente",
+      "deleted": "Artículo de noticias eliminado exitosamente",
+      "form": {
+        "title": "Título",
+        "excerpt": "Extracto",
+        "content": "Contenido",
+        "category": "Categoría",
+        "image_url": "URL de Imagen",
+        "published": "Publicado",
+        "featured": "Destacado"
+      }
+    },
+    "seasons": {
+      "title": "Gestión de Temporadas",
+      "create": "Crear Temporada"
+    },
+    "team": {
+      "title": "Gestión de Equipo",
+      "create": "Agregar Miembro del Equipo"
+    },
+    "voting": {
+      "title": "Gestión de Sitios de Votación",
+      "create": "Agregar Sitio de Votación"
+    },
+    "gallery": {
+      "title": "Gestión de Galería",
+      "create": "Agregar Imagen"
+    },
+    "store": {
+      "title": "Gestión de Tienda",
+      "create": "Agregar Artículo"
+    },
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "published": "Publicado",
+    "draft": "Borrador",
+    "featured": "Destacado",
+    "category": "Categoría",
+    "created": "Creado",
+    "coming_soon": "Esta sección llegará pronto...",
+    "edit_form_placeholder": "El formulario de edición se implementará aquí..."
+  }
+}

@@ -1,0 +1,249 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(222, 84%, 5%);
+  --foreground: hsl(210, 40%, 98%);
+  --card: hsl(222, 84%, 5%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --popover: hsl(222, 84%, 5%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --primary: hsl(195, 100%, 50%);
+  --primary-foreground: hsl(222, 84%, 5%);
+  --secondary: hsl(123, 100%, 50%);
+  --secondary-foreground: hsl(222, 84%, 5%);
+  --muted: hsl(217, 33%, 17%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --accent: hsl(271, 81%, 56%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --border: hsl(217, 33%, 17%);
+  --input: hsl(217, 33%, 17%);
+  --ring: hsl(195, 100%, 50%);
+  --sidebar: hsl(222, 84%, 5%);
+  --sidebar-foreground: hsl(210, 40%, 98%);
+  --sidebar-primary: hsl(195, 100%, 50%);
+  --sidebar-primary-foreground: hsl(222, 84%, 5%);
+  --sidebar-accent: hsl(271, 81%, 56%);
+  --sidebar-accent-foreground: hsl(210, 40%, 98%);
+  --sidebar-border: hsl(217, 33%, 17%);
+  --sidebar-ring: hsl(195, 100%, 50%);
+  --radius: 0.75rem;
+  --font-gaming: 'Orbitron', monospace;
+  --font-sans: 'Inter', sans-serif;
+}
+
+.dark {
+  --background: hsl(222, 84%, 5%);
+  --foreground: hsl(210, 40%, 98%);
+  --card: hsl(222, 84%, 5%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --popover: hsl(222, 84%, 5%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --primary: hsl(195, 100%, 50%);
+  --primary-foreground: hsl(222, 84%, 5%);
+  --secondary: hsl(123, 100%, 50%);
+  --secondary-foreground: hsl(222, 84%, 5%);
+  --muted: hsl(217, 33%, 17%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --accent: hsl(271, 81%, 56%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --border: hsl(217, 33%, 17%);
+  --input: hsl(217, 33%, 17%);
+  --ring: hsl(195, 100%, 50%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-sans);
+    background: linear-gradient(-45deg, #0a0a0f, #1a1a2e, #16213e, #0a0a0f);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-gaming);
+  }
+}
+
+@layer components {
+  /* Gaming button styles */
+  .btn-gaming {
+    @apply relative overflow-hidden bg-gradient-to-r from-primary to-accent border-2 border-transparent;
+    background-clip: padding-box;
+    transition: all 0.3s ease;
+  }
+
+  .btn-gaming:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-gaming:hover:before {
+    left: 100%;
+  }
+
+  .btn-gaming:hover {
+    box-shadow: 0 0 20px hsl(195, 100%, 50%, 0.5);
+    transform: translateY(-2px);
+  }
+
+  /* Glass card effect */
+  .glass-card {
+    @apply backdrop-blur-lg border;
+    background: rgba(15, 23, 42, 0.3);
+    backdrop-filter: blur(10px);
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+
+  /* Card hover effects */
+  .card-hover {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .card-hover:hover {
+    @apply transform -translate-y-2;
+    box-shadow: 0 20px 40px hsl(195, 100%, 50%, 0.2);
+  }
+
+  /* Neon text effect */
+  .neon-text {
+    text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 30px var(--primary);
+  }
+
+  /* Navigation glass effect */
+  .nav-glass {
+    @apply backdrop-blur-lg border-b;
+    background: rgba(15, 23, 42, 0.8);
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+
+  /* Gallery image effects */
+  .gallery-item {
+    @apply relative overflow-hidden rounded-xl;
+  }
+
+  .gallery-item img {
+    @apply transition-transform duration-300;
+  }
+
+  .gallery-item:hover img {
+    @apply transform scale-110;
+  }
+
+  .gallery-overlay {
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300 flex items-end p-4;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.8), transparent);
+  }
+
+  .gallery-item:hover .gallery-overlay {
+    @apply opacity-100;
+  }
+
+  /* Team member cards */
+  .team-card {
+    @apply bg-gradient-to-br from-card to-muted border border-border transition-all duration-300;
+  }
+
+  .team-card:hover {
+    @apply border-primary;
+    box-shadow: 0 10px 30px hsl(195, 100%, 50%, 0.2);
+  }
+
+  /* Server status indicator */
+  .status-online {
+    @apply bg-secondary;
+    animation: pulse 2s infinite;
+  }
+
+  .status-offline {
+    @apply bg-destructive;
+  }
+
+  /* Loading animations */
+  .loading-dot {
+    animation: loading 1.4s infinite ease-in-out;
+  }
+
+  .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+  .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+  /* Copy button animation */
+  .copy-success {
+    animation: copyFeedback 0.5s ease;
+  }
+}
+
+@layer utilities {
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-primary rounded;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/80;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes loading {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+@keyframes copyFeedback {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); background: var(--secondary); }
+  100% { transform: scale(1); }
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+}

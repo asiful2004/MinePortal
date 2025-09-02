@@ -1,0 +1,235 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "news": "Actualités",
+    "vote": "Voter",
+    "season": "Saison",
+    "about": "À Propos",
+    "store": "Boutique"
+  },
+  "server": {
+    "name": "SkyBlock Legends",
+    "tagline": "Serveur Minecraft Premium",
+    "description": "Découvrez l'aventure SkyBlock ultime avec des îles personnalisées, des quêtes épiques et des récompenses légendaires. Rejoignez des milliers de joueurs sur le serveur Minecraft le plus avancé.",
+    "ip": {
+      "label": "IP du Serveur",
+      "copy": "Copier",
+      "copied": "Copié !",
+      "copied_desc": "IP du serveur copiée dans le presse-papiers"
+    },
+    "players": {
+      "label": "Joueurs En Ligne"
+    },
+    "status": {
+      "label": "Statut du Serveur",
+      "online": "En Ligne",
+      "offline": "Hors Ligne",
+      "loading": "Chargement..."
+    }
+  },
+  "cta": {
+    "join": "Rejoindre le Serveur Maintenant",
+    "discord": "Rejoindre Discord"
+  },
+  "news": {
+    "title": "Dernières Actualités",
+    "subtitle": "Restez à jour avec les derniers développements du serveur et événements",
+    "page_subtitle": "Restez informé des derniers développements, événements et faits saillants de la communauté de SkyBlock Legends",
+    "readmore": "Lire Plus",
+    "viewall": "Voir Toutes les Actualités",
+    "empty": "Aucun article d'actualité disponible",
+    "featured": "En Vedette",
+    "category": {
+      "update": "Mise à Jour",
+      "event": "Événement",
+      "community": "Communauté",
+      "tournament": "Tournoi",
+      "maintenance": "Maintenance"
+    }
+  },
+  "season": {
+    "title": "Saisons du Serveur",
+    "subtitle": "Découvrez l'évolution de SkyBlock Legends à travers nos mises à jour saisonnières épiques",
+    "current": {
+      "label": "Saison Actuelle"
+    },
+    "active": "Active",
+    "explore": "Explorer la Saison",
+    "start_playing": "Commencer à Jouer",
+    "guide": "Guide de la Saison",
+    "history": "Historique des Saisons",
+    "empty": "Aucune saison disponible",
+    "video": {
+      "placeholder": "Bande-annonce de la Saison"
+    }
+  },
+  "gallery": {
+    "title": "Galerie des Moments Épiques",
+    "subtitle": "Témoignez des réalisations et constructions les plus incroyables de notre communauté",
+    "empty": "Aucune image de galerie disponible"
+  },
+  "team": {
+    "title": "Rencontrez Notre Équipe Légendaire",
+    "subtitle": "Les développeurs passionnés, administrateurs et dirigeants communautaires qui rendent SkyBlock Legends possible",
+    "meetfull": "Rencontrer Toute l'Équipe",
+    "empty": "Aucun membre d'équipe disponible",
+    "roles": {
+      "founder": "Fondateur",
+      "admin": "Administrateur",
+      "moderator": "Modérateur",
+      "developer": "Développeur",
+      "builder": "Constructeur",
+      "supporter": "Supporteur"
+    }
+  },
+  "vote": {
+    "title": "Votez pour SkyBlock Legends",
+    "subtitle": "Soutenez notre serveur et gagnez des récompenses incroyables en votant sur ces listes de serveurs Minecraft",
+    "benefits": {
+      "title": "Avantages du Vote",
+      "diamonds": "500 Diamants par vote",
+      "diamonds.desc": "Ajoutés instantanément à votre compte",
+      "exp": "XP Double pendant 1 heure",
+      "exp.desc": "Montez de niveau plus rapidement avec l'expérience bonus",
+      "crate": "Clé de Coffre de Vote",
+      "crate.desc": "Débloquez des objets exclusifs et des récompenses"
+    },
+    "sites": {
+      "title": "Votez sur Ces Sites",
+      "empty": "Aucun site de vote disponible"
+    },
+    "tutorial": {
+      "title": "Tutoriel Comment Voter",
+      "watch": "Regarder le Tutoriel"
+    },
+    "site": {
+      "reward": "+500 Diamants"
+    }
+  },
+  "store": {
+    "title": "Boutique SkyBlock",
+    "subtitle": "Soutenez le serveur et améliorez votre expérience de jeu avec des rangs exclusifs, objets et cosmétiques",
+    "ranks": {
+      "title": "Rangs VIP",
+      "empty": "Aucun rang disponible"
+    },
+    "items": {
+      "title": "Objets et Cosmétiques"
+    },
+    "popular": "POPULAIRE",
+    "onetime": "Achat unique",
+    "purchase": "Acheter",
+    "buy_now": "Acheter Maintenant",
+    "notice": {
+      "title": "Avis Important",
+      "description": "Tous les achats soutiennent le développement et la maintenance du serveur. Les objets sont livrés instantanément après un paiement réussi. Pour le support, contactez notre équipe sur Discord."
+    }
+  },
+  "about": {
+    "tagline": "Expérience Minecraft SkyBlock Premium depuis 2023",
+    "story": {
+      "title": "Notre Histoire",
+      "part1": "SkyBlock Legends est né d'une passion pour créer l'expérience Minecraft SkyBlock ultime. Fondé en 2023 par une équipe de développeurs dévoués et d'enthousiastes Minecraft, nous nous sommes mis à révolutionner le gameplay SkyBlock traditionnel avec des fonctionnalités innovantes, des mécaniques personnalisées et une expérience incroyable pilotée par la communauté.",
+      "part2": "Ce qui a commencé comme un petit serveur pour des amis s'est développé en l'un des serveurs SkyBlock les plus avancés au monde, hébergeant des milliers de joueurs qui se lancent dans des aventures épiques, construisent des îles incroyables et forgent des amitiés durables. Notre engagement envers la qualité, l'équité et l'innovation guide tout ce que nous faisons."
+    }
+  },
+  "footer": {
+    "description": "L'expérience de survie Minecraft ultime avec des plugins personnalisés et une communauté incroyable.",
+    "links": {
+      "title": "Liens Rapides"
+    },
+    "server": {
+      "title": "Informations du Serveur",
+      "ip": "IP",
+      "version": "Version",
+      "players": "Joueurs"
+    },
+    "contact": {
+      "title": "Contact",
+      "support": "Support",
+      "discord": "Discord",
+      "email": "Email"
+    },
+    "copyright": "© 2024 SkyBlock Legends. Tous droits réservés.",
+    "legal": {
+      "privacy": "Politique de Confidentialité",
+      "terms": "Conditions de Service"
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Panneau d'Administration",
+      "subtitle": "Connectez-vous pour gérer le contenu du serveur",
+      "username": "Nom d'Utilisateur",
+      "password": "Mot de Passe",
+      "username_placeholder": "Entrez votre nom d'utilisateur",
+      "password_placeholder": "Entrez votre mot de passe",
+      "login": "Se Connecter",
+      "logging_in": "Connexion en cours...",
+      "success": "Connexion réussie",
+      "welcome": "Bienvenue dans le panneau d'administration",
+      "error": "Échec de la connexion",
+      "invalid_credentials": "Nom d'utilisateur ou mot de passe invalide",
+      "default_credentials": "Identifiants par défaut pour le développement :"
+    },
+    "dashboard": {
+      "title": "Tableau de Bord Admin",
+      "welcome": "Bon retour, {{name}}"
+    },
+    "logout": "Se Déconnecter",
+    "loading": "Chargement du panneau d'administration...",
+    "tabs": {
+      "news": "Actualités",
+      "seasons": "Saisons",
+      "team": "Équipe",
+      "voting": "Vote",
+      "gallery": "Galerie",
+      "store": "Boutique"
+    },
+    "news": {
+      "title": "Gestion des Actualités",
+      "create": "Créer un Article",
+      "created": "Article d'actualité créé avec succès",
+      "updated": "Article d'actualité mis à jour avec succès",
+      "deleted": "Article d'actualité supprimé avec succès",
+      "form": {
+        "title": "Titre",
+        "excerpt": "Extrait",
+        "content": "Contenu",
+        "category": "Catégorie",
+        "image_url": "URL de l'Image",
+        "published": "Publié",
+        "featured": "En Vedette"
+      }
+    },
+    "seasons": {
+      "title": "Gestion des Saisons",
+      "create": "Créer une Saison"
+    },
+    "team": {
+      "title": "Gestion de l'Équipe",
+      "create": "Ajouter un Membre d'Équipe"
+    },
+    "voting": {
+      "title": "Gestion des Sites de Vote",
+      "create": "Ajouter un Site de Vote"
+    },
+    "gallery": {
+      "title": "Gestion de la Galerie",
+      "create": "Ajouter une Image"
+    },
+    "store": {
+      "title": "Gestion de la Boutique",
+      "create": "Ajouter un Article"
+    },
+    "save": "Sauvegarder",
+    "cancel": "Annuler",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "featured": "En Vedette",
+    "category": "Catégorie",
+    "created": "Créé",
+    "coming_soon": "Cette section arrive bientôt...",
+    "edit_form_placeholder": "Le formulaire d'édition sera implémenté ici..."
+  }
+}

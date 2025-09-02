@@ -1,0 +1,235 @@
+{
+  "nav": {
+    "home": "Home",
+    "news": "News",
+    "vote": "Vote",
+    "season": "Season",
+    "about": "About Us",
+    "store": "Store"
+  },
+  "server": {
+    "name": "SkyBlock Legends",
+    "tagline": "Premium Minecraft Server",
+    "description": "Experience the ultimate SkyBlock adventure with custom islands, epic quests, and legendary rewards. Join thousands of players in the most advanced Minecraft server.",
+    "ip": {
+      "label": "Server IP",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "copied_desc": "Server IP copied to clipboard"
+    },
+    "players": {
+      "label": "Players Online"
+    },
+    "status": {
+      "label": "Server Status",
+      "online": "Online",
+      "offline": "Offline",
+      "loading": "Loading..."
+    }
+  },
+  "cta": {
+    "join": "Join Server Now",
+    "discord": "Join Discord"
+  },
+  "news": {
+    "title": "Latest News",
+    "subtitle": "Stay updated with the latest server developments and events",
+    "page_subtitle": "Stay informed with the latest developments, events, and community highlights from SkyBlock Legends",
+    "readmore": "Read More",
+    "viewall": "View All News",
+    "empty": "No news articles available",
+    "featured": "Featured",
+    "category": {
+      "update": "Update",
+      "event": "Event",
+      "community": "Community",
+      "tournament": "Tournament",
+      "maintenance": "Maintenance"
+    }
+  },
+  "season": {
+    "title": "Server Seasons",
+    "subtitle": "Experience the evolution of SkyBlock Legends through our epic seasonal updates",
+    "current": {
+      "label": "Current Season"
+    },
+    "active": "Active",
+    "explore": "Explore Season",
+    "start_playing": "Start Playing",
+    "guide": "Season Guide",
+    "history": "Season History",
+    "empty": "No seasons available",
+    "video": {
+      "placeholder": "Season Trailer"
+    }
+  },
+  "gallery": {
+    "title": "Epic Moments Gallery",
+    "subtitle": "Witness the most incredible achievements and builds from our community",
+    "empty": "No gallery images available"
+  },
+  "team": {
+    "title": "Meet Our Legendary Team",
+    "subtitle": "The passionate developers, admins, and community leaders who make SkyBlock Legends possible",
+    "meetfull": "Meet the Full Team",
+    "empty": "No team members available",
+    "roles": {
+      "founder": "Founder",
+      "admin": "Admin",
+      "moderator": "Moderator",
+      "developer": "Developer",
+      "builder": "Builder",
+      "supporter": "Supporter"
+    }
+  },
+  "vote": {
+    "title": "Vote for SkyBlock Legends",
+    "subtitle": "Support our server and earn amazing rewards by voting on these Minecraft server lists",
+    "benefits": {
+      "title": "Voting Benefits",
+      "diamonds": "500 Diamonds per vote",
+      "diamonds.desc": "Instantly added to your account",
+      "exp": "Double XP for 1 hour",
+      "exp.desc": "Level up faster with bonus experience",
+      "crate": "Vote Crate Key",
+      "crate.desc": "Unlock exclusive items and rewards"
+    },
+    "sites": {
+      "title": "Vote on These Sites",
+      "empty": "No voting sites available"
+    },
+    "tutorial": {
+      "title": "How to Vote Tutorial",
+      "watch": "Watch Tutorial"
+    },
+    "site": {
+      "reward": "+500 Diamonds"
+    }
+  },
+  "store": {
+    "title": "SkyBlock Store",
+    "subtitle": "Support the server and enhance your gameplay with exclusive ranks, items, and cosmetics",
+    "ranks": {
+      "title": "VIP Ranks",
+      "empty": "No ranks available"
+    },
+    "items": {
+      "title": "Items & Cosmetics"
+    },
+    "popular": "POPULAR",
+    "onetime": "One-time purchase",
+    "purchase": "Purchase",
+    "buy_now": "Buy Now",
+    "notice": {
+      "title": "Important Notice",
+      "description": "All purchases support server development and maintenance. Items are delivered instantly upon successful payment. For support, contact our team on Discord."
+    }
+  },
+  "about": {
+    "tagline": "Premium Minecraft SkyBlock Experience Since 2023",
+    "story": {
+      "title": "Our Story",
+      "part1": "SkyBlock Legends was born from a passion for creating the ultimate Minecraft SkyBlock experience. Founded in 2023 by a team of dedicated developers and Minecraft enthusiasts, we set out to revolutionize traditional SkyBlock gameplay with innovative features, custom mechanics, and an incredible community-driven experience.",
+      "part2": "What started as a small server for friends has grown into one of the most advanced SkyBlock servers in the world, hosting thousands of players who embark on epic adventures, build incredible islands, and forge lasting friendships. Our commitment to quality, fairness, and innovation drives everything we do."
+    }
+  },
+  "footer": {
+    "description": "The ultimate Minecraft survival experience with custom plugins and amazing community.",
+    "links": {
+      "title": "Quick Links"
+    },
+    "server": {
+      "title": "Server Info",
+      "ip": "IP",
+      "version": "Version",
+      "players": "Players"
+    },
+    "contact": {
+      "title": "Contact",
+      "support": "Support",
+      "discord": "Discord",
+      "email": "Email"
+    },
+    "copyright": "© 2024 SkyBlock Legends. All rights reserved.",
+    "legal": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Admin Panel",
+      "subtitle": "Sign in to manage server content",
+      "username": "Username",
+      "password": "Password",
+      "username_placeholder": "Enter your username",
+      "password_placeholder": "Enter your password",
+      "login": "Login",
+      "logging_in": "Logging in...",
+      "success": "Login successful",
+      "welcome": "Welcome to the admin panel",
+      "error": "Login failed",
+      "invalid_credentials": "Invalid username or password",
+      "default_credentials": "Default credentials for development:"
+    },
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "welcome": "Welcome back, {{name}}"
+    },
+    "logout": "Logout",
+    "loading": "Loading admin panel...",
+    "tabs": {
+      "news": "News",
+      "seasons": "Seasons",
+      "team": "Team",
+      "voting": "Voting",
+      "gallery": "Gallery",
+      "store": "Store"
+    },
+    "news": {
+      "title": "News Management",
+      "create": "Create Article",
+      "created": "News article created successfully",
+      "updated": "News article updated successfully",
+      "deleted": "News article deleted successfully",
+      "form": {
+        "title": "Title",
+        "excerpt": "Excerpt",
+        "content": "Content",
+        "category": "Category",
+        "image_url": "Image URL",
+        "published": "Published",
+        "featured": "Featured"
+      }
+    },
+    "seasons": {
+      "title": "Season Management",
+      "create": "Create Season"
+    },
+    "team": {
+      "title": "Team Management",
+      "create": "Add Team Member"
+    },
+    "voting": {
+      "title": "Voting Sites Management",
+      "create": "Add Voting Site"
+    },
+    "gallery": {
+      "title": "Gallery Management",
+      "create": "Add Image"
+    },
+    "store": {
+      "title": "Store Management",
+      "create": "Add Item"
+    },
+    "save": "Save",
+    "cancel": "Cancel",
+    "published": "Published",
+    "draft": "Draft",
+    "featured": "Featured",
+    "category": "Category",
+    "created": "Created",
+    "coming_soon": "This section is coming soon...",
+    "edit_form_placeholder": "Edit form will be implemented here..."
+  }
+}
