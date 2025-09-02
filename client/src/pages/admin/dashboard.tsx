@@ -315,6 +315,225 @@ export default function AdminDashboard() {
     </div>
   );
 
+  // Seasons Management
+  const renderSeasonsTab = () => (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Seasons Management</h3>
+        <Button className="btn-gaming" data-testid="create-season">
+          <Plus className="w-4 h-4 mr-2" />
+          Create Season
+        </Button>
+      </div>
+      
+      <div className="grid gap-4">
+        {seasons.map((season) => (
+          <Card key={season.id} className="glass-card">
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{season.name}</CardTitle>
+                  <CardDescription>{season.description}</CardDescription>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge variant={season.isActive ? 'default' : 'secondary'}>
+                      {season.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                    <Badge variant="outline">
+                      {season.startDate ? new Date(season.startDate).toLocaleDateString() : 'No start date'} - {season.endDate ? new Date(season.endDate).toLocaleDateString() : 'No end date'}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" data-testid={`edit-season-${season.id}`}>
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" variant="destructive" data-testid={`delete-season-${season.id}`}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Team Management
+  const renderTeamTab = () => (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Team Management</h3>
+        <Button className="btn-gaming" data-testid="create-team">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Team Member
+        </Button>
+      </div>
+      
+      <div className="grid gap-4">
+        {team.map((member) => (
+          <Card key={member.id} className="glass-card">
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{member.name}</CardTitle>
+                  <CardDescription>{member.description}</CardDescription>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge variant={member.isActive ? 'default' : 'secondary'}>
+                      {member.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                    <Badge variant="outline">{member.role}</Badge>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" data-testid={`edit-team-${member.id}`}>
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" variant="destructive" data-testid={`delete-team-${member.id}`}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Voting Sites Management
+  const renderVotingTab = () => (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Voting Sites Management</h3>
+        <Button className="btn-gaming" data-testid="create-voting">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Voting Site
+        </Button>
+      </div>
+      
+      <div className="grid gap-4">
+        {votingSites.map((site) => (
+          <Card key={site.id} className="glass-card">
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{site.name}</CardTitle>
+                  <CardDescription>{site.description}</CardDescription>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge variant={site.isActive ? 'default' : 'secondary'}>
+                      {site.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                    <Badge variant="outline">Reward: {site.reward}</Badge>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" data-testid={`edit-voting-${site.id}`}>
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" variant="destructive" data-testid={`delete-voting-${site.id}`}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Gallery Management
+  const renderGalleryTab = () => (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Gallery Management</h3>
+        <Button className="btn-gaming" data-testid="create-gallery">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Image
+        </Button>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {gallery.map((image) => (
+          <Card key={image.id} className="glass-card">
+            <div className="aspect-video w-full overflow-hidden rounded-t-lg">
+              <img
+                src={image.imageUrl}
+                alt={image.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{image.title}</CardTitle>
+                  <CardDescription>{image.description}</CardDescription>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge variant={image.isVisible ? 'default' : 'secondary'}>
+                      {image.isVisible ? 'Visible' : 'Hidden'}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" data-testid={`edit-gallery-${image.id}`}>
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" variant="destructive" data-testid={`delete-gallery-${image.id}`}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Store Management
+  const renderStoreTab = () => (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Store Management</h3>
+        <Button className="btn-gaming" data-testid="create-store">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Item
+        </Button>
+      </div>
+      
+      <div className="grid gap-4">
+        {store.map((item) => (
+          <Card key={item.id} className="glass-card">
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{item.name}</CardTitle>
+                  <CardDescription>{item.description}</CardDescription>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge variant={item.isActive ? 'default' : 'secondary'}>
+                      {item.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                    <Badge variant="outline">${item.price}</Badge>
+                    <Badge variant="outline">{item.category}</Badge>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" data-testid={`edit-store-${item.id}`}>
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" variant="destructive" data-testid={`delete-store-${item.id}`}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
   const renderNewsTab = () => (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -439,33 +658,23 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="seasons" className="space-y-6">
-            <div className="text-center text-muted-foreground py-8">
-              Season management functionality coming soon...
-            </div>
+            {renderSeasonsTab()}
           </TabsContent>
 
           <TabsContent value="team" className="space-y-6">
-            <div className="text-center text-muted-foreground py-8">
-              Team management functionality coming soon...
-            </div>
+            {renderTeamTab()}
           </TabsContent>
 
           <TabsContent value="voting" className="space-y-6">
-            <div className="text-center text-muted-foreground py-8">
-              Voting sites management functionality coming soon...
-            </div>
+            {renderVotingTab()}
           </TabsContent>
 
           <TabsContent value="gallery" className="space-y-6">
-            <div className="text-center text-muted-foreground py-8">
-              Gallery management functionality coming soon...
-            </div>
+            {renderGalleryTab()}
           </TabsContent>
 
           <TabsContent value="store" className="space-y-6">
-            <div className="text-center text-muted-foreground py-8">
-              Store management functionality coming soon...
-            </div>
+            {renderStoreTab()}
           </TabsContent>
         </Tabs>
       </div>
