@@ -359,6 +359,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/admin/voting-sites/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteVotingSite(id);
+      res.json({ message: 'Voting site deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting voting site:', error);
+      res.status(500).json({ message: 'Failed to delete voting site' });
+    }
+  });
+
   // Gallery management routes
   app.get('/api/admin/gallery', authenticateToken, async (req, res) => {
     try {
@@ -393,6 +404,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/admin/gallery/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteGalleryImage(id);
+      res.json({ message: 'Gallery image deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting gallery image:', error);
+      res.status(500).json({ message: 'Failed to delete gallery image' });
+    }
+  });
+
   // Store management routes
   app.get('/api/admin/store', authenticateToken, async (req, res) => {
     try {
@@ -424,6 +446,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error updating store item:', error);
       res.status(500).json({ message: 'Failed to update store item' });
+    }
+  });
+
+  app.delete('/api/admin/store/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteStoreItem(id);
+      res.json({ message: 'Store item deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting store item:', error);
+      res.status(500).json({ message: 'Failed to delete store item' });
     }
   });
 

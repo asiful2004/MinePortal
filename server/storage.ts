@@ -64,16 +64,19 @@ export interface IStorage {
   getActiveVotingSites(): Promise<VotingSite[]>;
   createVotingSite(site: InsertVotingSite): Promise<VotingSite>;
   updateVotingSite(id: string, site: Partial<InsertVotingSite>): Promise<VotingSite>;
+  deleteVotingSite(id: string): Promise<void>;
 
   // Gallery
   getVisibleGalleryImages(): Promise<GalleryImage[]>;
   createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
   updateGalleryImage(id: string, image: Partial<InsertGalleryImage>): Promise<GalleryImage>;
+  deleteGalleryImage(id: string): Promise<void>;
 
   // Store
   getActiveStoreItems(): Promise<StoreItem[]>;
   createStoreItem(item: InsertStoreItem): Promise<StoreItem>;
   updateStoreItem(id: string, item: Partial<InsertStoreItem>): Promise<StoreItem>;
+  deleteStoreItem(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -283,6 +286,11 @@ export class DatabaseStorage implements IStorage {
     return updated;
   }
 
+  async deleteVotingSite(id: string): Promise<void> {
+    const result = await db.delete(votingSites).where(eq(votingSites.id, id));
+    console.log(`Deleted ${result.rowCount || 0} voting site(s) with ID: ${id}`);
+  }
+
   // Gallery
   async getVisibleGalleryImages(): Promise<GalleryImage[]> {
     return db
@@ -309,6 +317,11 @@ export class DatabaseStorage implements IStorage {
     return updated;
   }
 
+  async deleteGalleryImage(id: string): Promise<void> {
+    const result = await db.delete(galleryImages).where(eq(galleryImages.id, id));
+    console.log(`Deleted ${result.rowCount || 0} gallery image(s) with ID: ${id}`);
+  }
+
   // Store
   async getActiveStoreItems(): Promise<StoreItem[]> {
     return db
@@ -333,6 +346,11 @@ export class DatabaseStorage implements IStorage {
       .where(eq(storeItems.id, id))
       .returning();
     return updated;
+  }
+
+  async deleteStoreItem(id: string): Promise<void> {
+    const result = await db.delete(storeItems).where(eq(storeItems.id, id));
+    console.log(`Deleted ${result.rowCount || 0} store item(s) with ID: ${id}`);
   }
 }
 
