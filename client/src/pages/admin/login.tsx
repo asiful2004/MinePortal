@@ -41,9 +41,10 @@ export default function AdminLogin() {
       // Redirect to admin dashboard
       setLocation('/admin/dashboard');
     } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: t('admin.login.error'),
-        description: t('admin.login.invalid_credentials'),
+        description: error instanceof Error ? error.message : t('admin.login.invalid_credentials'),
         variant: 'destructive',
       });
     } finally {
