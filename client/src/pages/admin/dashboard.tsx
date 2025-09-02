@@ -44,6 +44,20 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  
+  // Dialog states for different sections
+  const [showSeasonDialog, setShowSeasonDialog] = useState(false);
+  const [showTeamDialog, setShowTeamDialog] = useState(false);
+  const [showVotingDialog, setShowVotingDialog] = useState(false);
+  const [showGalleryDialog, setShowGalleryDialog] = useState(false);
+  const [showStoreDialog, setShowStoreDialog] = useState(false);
+  
+  // Editing states for different sections
+  const [editingSeason, setEditingSeason] = useState<any>(null);
+  const [editingTeam, setEditingTeam] = useState<any>(null);
+  const [editingVoting, setEditingVoting] = useState<any>(null);
+  const [editingGallery, setEditingGallery] = useState<any>(null);
+  const [editingStore, setEditingStore] = useState<any>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -220,6 +234,300 @@ export default function AdminDashboard() {
     }
   });
 
+  // Seasons Mutations
+  const createSeasonMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/admin/seasons', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to create season');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/seasons'] });
+      toast({ title: 'Success', description: 'Season created successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const updateSeasonMutation = useMutation({
+    mutationFn: async ({ id, ...data }: any) => {
+      const response = await fetch(`/api/admin/seasons/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to update season');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/seasons'] });
+      toast({ title: 'Success', description: 'Season updated successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const deleteSeasonMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/admin/seasons/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to delete season');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/seasons'] });
+      toast({ title: 'Success', description: 'Season deleted successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  // Team Mutations
+  const createTeamMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/admin/team', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to create team member');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/team'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/team'] });
+      toast({ title: 'Success', description: 'Team member created successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const updateTeamMutation = useMutation({
+    mutationFn: async ({ id, ...data }: any) => {
+      const response = await fetch(`/api/admin/team/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to update team member');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/team'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/team'] });
+      toast({ title: 'Success', description: 'Team member updated successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const deleteTeamMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/admin/team/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to delete team member');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/team'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/team'] });
+      toast({ title: 'Success', description: 'Team member deleted successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  // Voting Sites Mutations
+  const createVotingMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/admin/voting-sites', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to create voting site');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/voting-sites'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/voting-sites'] });
+      toast({ title: 'Success', description: 'Voting site created successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const updateVotingMutation = useMutation({
+    mutationFn: async ({ id, ...data }: any) => {
+      const response = await fetch(`/api/admin/voting-sites/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to update voting site');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/voting-sites'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/voting-sites'] });
+      toast({ title: 'Success', description: 'Voting site updated successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const deleteVotingMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/admin/voting-sites/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to delete voting site');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/voting-sites'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/voting-sites'] });
+      toast({ title: 'Success', description: 'Voting site deleted successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  // Gallery Mutations
+  const createGalleryMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/admin/gallery', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to create gallery image');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/gallery'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+      toast({ title: 'Success', description: 'Gallery image created successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const updateGalleryMutation = useMutation({
+    mutationFn: async ({ id, ...data }: any) => {
+      const response = await fetch(`/api/admin/gallery/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to update gallery image');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/gallery'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+      toast({ title: 'Success', description: 'Gallery image updated successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const deleteGalleryMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/admin/gallery/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to delete gallery image');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/gallery'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+      toast({ title: 'Success', description: 'Gallery image deleted successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  // Store Mutations
+  const createStoreMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/admin/store', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to create store item');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/store'] });
+      toast({ title: 'Success', description: 'Store item created successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const updateStoreMutation = useMutation({
+    mutationFn: async ({ id, ...data }: any) => {
+      const response = await fetch(`/api/admin/store/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to update store item');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/store'] });
+      toast({ title: 'Success', description: 'Store item updated successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const deleteStoreMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/admin/store/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to delete store item');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/store'] });
+      toast({ title: 'Success', description: 'Store item deleted successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center" data-testid="admin-loading">
@@ -320,7 +628,11 @@ export default function AdminDashboard() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Seasons Management</h3>
-        <Button className="btn-gaming" data-testid="create-season">
+        <Button 
+          className="btn-gaming" 
+          data-testid="create-season"
+          onClick={() => setShowSeasonDialog(true)}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Create Season
         </Button>
@@ -344,10 +656,20 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" data-testid={`edit-season-${season.id}`}>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    data-testid={`edit-season-${season.id}`}
+                    onClick={() => setEditingSeason(season)}
+                  >
                     <Edit className="w-4 h-4" />
                   </Button>
-                  <Button size="sm" variant="destructive" data-testid={`delete-season-${season.id}`}>
+                  <Button 
+                    size="sm" 
+                    variant="destructive" 
+                    data-testid={`delete-season-${season.id}`}
+                    onClick={() => deleteSeasonMutation.mutate(season.id)}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -364,7 +686,11 @@ export default function AdminDashboard() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Team Management</h3>
-        <Button className="btn-gaming" data-testid="create-team">
+        <Button 
+          className="btn-gaming" 
+          data-testid="create-team"
+          onClick={() => setShowTeamDialog(true)}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Team Member
         </Button>
@@ -386,10 +712,20 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" data-testid={`edit-team-${member.id}`}>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    data-testid={`edit-team-${member.id}`}
+                    onClick={() => setEditingTeam(member)}
+                  >
                     <Edit className="w-4 h-4" />
                   </Button>
-                  <Button size="sm" variant="destructive" data-testid={`delete-team-${member.id}`}>
+                  <Button 
+                    size="sm" 
+                    variant="destructive" 
+                    data-testid={`delete-team-${member.id}`}
+                    onClick={() => deleteTeamMutation.mutate(member.id)}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -406,7 +742,11 @@ export default function AdminDashboard() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Voting Sites Management</h3>
-        <Button className="btn-gaming" data-testid="create-voting">
+        <Button 
+          className="btn-gaming" 
+          data-testid="create-voting"
+          onClick={() => setShowVotingDialog(true)}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Voting Site
         </Button>
@@ -428,10 +768,20 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" data-testid={`edit-voting-${site.id}`}>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    data-testid={`edit-voting-${site.id}`}
+                    onClick={() => setEditingVoting(site)}
+                  >
                     <Edit className="w-4 h-4" />
                   </Button>
-                  <Button size="sm" variant="destructive" data-testid={`delete-voting-${site.id}`}>
+                  <Button 
+                    size="sm" 
+                    variant="destructive" 
+                    data-testid={`delete-voting-${site.id}`}
+                    onClick={() => deleteVotingMutation.mutate(site.id)}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -448,7 +798,11 @@ export default function AdminDashboard() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Gallery Management</h3>
-        <Button className="btn-gaming" data-testid="create-gallery">
+        <Button 
+          className="btn-gaming" 
+          data-testid="create-gallery"
+          onClick={() => setShowGalleryDialog(true)}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Image
         </Button>
@@ -476,10 +830,20 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" data-testid={`edit-gallery-${image.id}`}>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    data-testid={`edit-gallery-${image.id}`}
+                    onClick={() => setEditingGallery(image)}
+                  >
                     <Edit className="w-4 h-4" />
                   </Button>
-                  <Button size="sm" variant="destructive" data-testid={`delete-gallery-${image.id}`}>
+                  <Button 
+                    size="sm" 
+                    variant="destructive" 
+                    data-testid={`delete-gallery-${image.id}`}
+                    onClick={() => deleteGalleryMutation.mutate(image.id)}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -496,7 +860,11 @@ export default function AdminDashboard() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Store Management</h3>
-        <Button className="btn-gaming" data-testid="create-store">
+        <Button 
+          className="btn-gaming" 
+          data-testid="create-store"
+          onClick={() => setShowStoreDialog(true)}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Item
         </Button>
@@ -519,10 +887,20 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" data-testid={`edit-store-${item.id}`}>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    data-testid={`edit-store-${item.id}`}
+                    onClick={() => setEditingStore(item)}
+                  >
                     <Edit className="w-4 h-4" />
                   </Button>
-                  <Button size="sm" variant="destructive" data-testid={`delete-store-${item.id}`}>
+                  <Button 
+                    size="sm" 
+                    variant="destructive" 
+                    data-testid={`delete-store-${item.id}`}
+                    onClick={() => deleteStoreMutation.mutate(item.id)}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -678,6 +1056,136 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Season Dialog */}
+      <Dialog open={showSeasonDialog} onOpenChange={setShowSeasonDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Create Season</DialogTitle>
+            <DialogDescription>Add a new season to your server.</DialogDescription>
+          </DialogHeader>
+          <SeasonForm onSubmit={(data) => {createSeasonMutation.mutate(data); setShowSeasonDialog(false);}} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!editingSeason} onOpenChange={() => setEditingSeason(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Season</DialogTitle>
+            <DialogDescription>Update season information.</DialogDescription>
+          </DialogHeader>
+          {editingSeason && (
+            <SeasonForm 
+              initialData={editingSeason}
+              onSubmit={(data) => {updateSeasonMutation.mutate({id: editingSeason.id, ...data}); setEditingSeason(null);}} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Team Dialog */}
+      <Dialog open={showTeamDialog} onOpenChange={setShowTeamDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add Team Member</DialogTitle>
+            <DialogDescription>Add a new team member to your staff.</DialogDescription>
+          </DialogHeader>
+          <TeamForm onSubmit={(data) => {createTeamMutation.mutate(data); setShowTeamDialog(false);}} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!editingTeam} onOpenChange={() => setEditingTeam(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Team Member</DialogTitle>
+            <DialogDescription>Update team member information.</DialogDescription>
+          </DialogHeader>
+          {editingTeam && (
+            <TeamForm 
+              initialData={editingTeam}
+              onSubmit={(data) => {updateTeamMutation.mutate({id: editingTeam.id, ...data}); setEditingTeam(null);}} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Voting Dialog */}
+      <Dialog open={showVotingDialog} onOpenChange={setShowVotingDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add Voting Site</DialogTitle>
+            <DialogDescription>Add a new voting site for players.</DialogDescription>
+          </DialogHeader>
+          <VotingForm onSubmit={(data) => {createVotingMutation.mutate(data); setShowVotingDialog(false);}} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!editingVoting} onOpenChange={() => setEditingVoting(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Voting Site</DialogTitle>
+            <DialogDescription>Update voting site information.</DialogDescription>
+          </DialogHeader>
+          {editingVoting && (
+            <VotingForm 
+              initialData={editingVoting}
+              onSubmit={(data) => {updateVotingMutation.mutate({id: editingVoting.id, ...data}); setEditingVoting(null);}} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Gallery Dialog */}
+      <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add Gallery Image</DialogTitle>
+            <DialogDescription>Add a new image to your gallery.</DialogDescription>
+          </DialogHeader>
+          <GalleryForm onSubmit={(data) => {createGalleryMutation.mutate(data); setShowGalleryDialog(false);}} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!editingGallery} onOpenChange={() => setEditingGallery(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Gallery Image</DialogTitle>
+            <DialogDescription>Update image information.</DialogDescription>
+          </DialogHeader>
+          {editingGallery && (
+            <GalleryForm 
+              initialData={editingGallery}
+              onSubmit={(data) => {updateGalleryMutation.mutate({id: editingGallery.id, ...data}); setEditingGallery(null);}} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Store Dialog */}
+      <Dialog open={showStoreDialog} onOpenChange={setShowStoreDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add Store Item</DialogTitle>
+            <DialogDescription>Add a new item to your store.</DialogDescription>
+          </DialogHeader>
+          <StoreForm onSubmit={(data) => {createStoreMutation.mutate(data); setShowStoreDialog(false);}} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!editingStore} onOpenChange={() => setEditingStore(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Store Item</DialogTitle>
+            <DialogDescription>Update store item information.</DialogDescription>
+          </DialogHeader>
+          {editingStore && (
+            <StoreForm 
+              initialData={editingStore}
+              onSubmit={(data) => {updateStoreMutation.mutate({id: editingStore.id, ...data}); setEditingStore(null);}} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -926,6 +1434,367 @@ function NewsEditForm({
           Cancel
         </Button>
       </div>
+    </form>
+  );
+}
+
+// Season Form Component
+function SeasonForm({ onSubmit, initialData }: { onSubmit: (data: any) => void; initialData?: any }) {
+  const [formData, setFormData] = useState({
+    name: initialData?.name || '',
+    description: initialData?.description || '',
+    startDate: initialData?.startDate || '',
+    endDate: initialData?.endDate || '',
+    isActive: initialData?.isActive || false,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="season-name">Season Name</Label>
+        <Input
+          id="season-name"
+          value={formData.name}
+          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="season-description">Description</Label>
+        <Textarea
+          id="season-description"
+          value={formData.description}
+          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="season-start">Start Date</Label>
+        <Input
+          id="season-start"
+          type="date"
+          value={formData.startDate}
+          onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
+        />
+      </div>
+      <div>
+        <Label htmlFor="season-end">End Date</Label>
+        <Input
+          id="season-end"
+          type="date"
+          value={formData.endDate}
+          onChange={(e) => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
+        />
+      </div>
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="season-active"
+          checked={formData.isActive}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+        />
+        <Label htmlFor="season-active">Active Season</Label>
+      </div>
+      <Button type="submit" className="w-full">
+        {initialData ? 'Update Season' : 'Create Season'}
+      </Button>
+    </form>
+  );
+}
+
+// Team Form Component
+function TeamForm({ onSubmit, initialData }: { onSubmit: (data: any) => void; initialData?: any }) {
+  const [formData, setFormData] = useState({
+    name: initialData?.name || '',
+    role: initialData?.role || '',
+    description: initialData?.description || '',
+    avatarUrl: initialData?.avatarUrl || '',
+    isActive: initialData?.isActive || true,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="team-name">Name</Label>
+        <Input
+          id="team-name"
+          value={formData.name}
+          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="team-role">Role</Label>
+        <Input
+          id="team-role"
+          value={formData.role}
+          onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="team-description">Description</Label>
+        <Textarea
+          id="team-description"
+          value={formData.description}
+          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="team-avatar">Avatar URL</Label>
+        <Input
+          id="team-avatar"
+          type="url"
+          value={formData.avatarUrl}
+          onChange={(e) => setFormData(prev => ({ ...prev, avatarUrl: e.target.value }))}
+        />
+      </div>
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="team-active"
+          checked={formData.isActive}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+        />
+        <Label htmlFor="team-active">Active Member</Label>
+      </div>
+      <Button type="submit" className="w-full">
+        {initialData ? 'Update Member' : 'Add Member'}
+      </Button>
+    </form>
+  );
+}
+
+// Voting Form Component
+function VotingForm({ onSubmit, initialData }: { onSubmit: (data: any) => void; initialData?: any }) {
+  const [formData, setFormData] = useState({
+    name: initialData?.name || '',
+    url: initialData?.url || '',
+    description: initialData?.description || '',
+    reward: initialData?.reward || '',
+    isActive: initialData?.isActive || true,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="voting-name">Site Name</Label>
+        <Input
+          id="voting-name"
+          value={formData.name}
+          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="voting-url">URL</Label>
+        <Input
+          id="voting-url"
+          type="url"
+          value={formData.url}
+          onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="voting-description">Description</Label>
+        <Textarea
+          id="voting-description"
+          value={formData.description}
+          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="voting-reward">Reward</Label>
+        <Input
+          id="voting-reward"
+          value={formData.reward}
+          onChange={(e) => setFormData(prev => ({ ...prev, reward: e.target.value }))}
+          required
+        />
+      </div>
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="voting-active"
+          checked={formData.isActive}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+        />
+        <Label htmlFor="voting-active">Active Site</Label>
+      </div>
+      <Button type="submit" className="w-full">
+        {initialData ? 'Update Site' : 'Add Site'}
+      </Button>
+    </form>
+  );
+}
+
+// Gallery Form Component
+function GalleryForm({ onSubmit, initialData }: { onSubmit: (data: any) => void; initialData?: any }) {
+  const [formData, setFormData] = useState({
+    title: initialData?.title || '',
+    description: initialData?.description || '',
+    imageUrl: initialData?.imageUrl || '',
+    isVisible: initialData?.isVisible !== undefined ? initialData.isVisible : true,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="gallery-title">Title</Label>
+        <Input
+          id="gallery-title"
+          value={formData.title}
+          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="gallery-description">Description</Label>
+        <Textarea
+          id="gallery-description"
+          value={formData.description}
+          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="gallery-image">Image URL</Label>
+        <Input
+          id="gallery-image"
+          type="url"
+          value={formData.imageUrl}
+          onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
+          required
+        />
+      </div>
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="gallery-visible"
+          checked={formData.isVisible}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isVisible: checked }))}
+        />
+        <Label htmlFor="gallery-visible">Visible</Label>
+      </div>
+      <Button type="submit" className="w-full">
+        {initialData ? 'Update Image' : 'Add Image'}
+      </Button>
+    </form>
+  );
+}
+
+// Store Form Component
+function StoreForm({ onSubmit, initialData }: { onSubmit: (data: any) => void; initialData?: any }) {
+  const [formData, setFormData] = useState({
+    name: initialData?.name || '',
+    description: initialData?.description || '',
+    price: initialData?.price || '',
+    category: initialData?.category || 'ranks',
+    imageUrl: initialData?.imageUrl || '',
+    isActive: initialData?.isActive !== undefined ? initialData.isActive : true,
+    isFeatured: initialData?.isFeatured || false,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      ...formData,
+      price: parseFloat(formData.price),
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="store-name">Item Name</Label>
+        <Input
+          id="store-name"
+          value={formData.name}
+          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="store-description">Description</Label>
+        <Textarea
+          id="store-description"
+          value={formData.description}
+          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="store-price">Price ($)</Label>
+        <Input
+          id="store-price"
+          type="number"
+          step="0.01"
+          value={formData.price}
+          onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="store-category">Category</Label>
+        <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ranks">Ranks</SelectItem>
+            <SelectItem value="items">Items</SelectItem>
+            <SelectItem value="keys">Keys</SelectItem>
+            <SelectItem value="cosmetics">Cosmetics</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label htmlFor="store-image">Image URL</Label>
+        <Input
+          id="store-image"
+          type="url"
+          value={formData.imageUrl}
+          onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
+        />
+      </div>
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="store-active"
+          checked={formData.isActive}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+        />
+        <Label htmlFor="store-active">Active</Label>
+      </div>
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="store-featured"
+          checked={formData.isFeatured}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isFeatured: checked }))}
+        />
+        <Label htmlFor="store-featured">Featured</Label>
+      </div>
+      <Button type="submit" className="w-full">
+        {initialData ? 'Update Item' : 'Add Item'}
+      </Button>
     </form>
   );
 }
