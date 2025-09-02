@@ -33,6 +33,7 @@ function Router() {
           <Route path="/season" component={Season} />
           <Route path="/about" component={About} />
           <Route path="/store" component={Store} />
+          <Route path="/admin" component={AdminLogin} />
           <Route path="/admin/login" component={AdminLogin} />
           <Route path="/admin/dashboard" component={AdminDashboard} />
           <Route component={NotFound} />
