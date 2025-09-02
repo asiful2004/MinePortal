@@ -15,7 +15,7 @@ export async function seedDatabase() {
     // Create admin user
     await storage.createUser({
       username: "admin",
-      password: "skyblock2024",
+      password: "admin123",
       role: "admin",
     });
 
