@@ -15,10 +15,13 @@ import {
   Edit,
   Trash2,
   Save,
-  X
+  X,
+  Server,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,9 +29,10 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import type { NewsArticle, Season, TeamMember, VotingSite, GalleryImage, StoreItem } from '@shared/schema';
+import type { NewsArticle, Season, TeamMember, VotingSite, GalleryImage, StoreItem, ServerConfig } from '@shared/schema';
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
@@ -37,7 +41,9 @@ export default function AdminDashboard() {
   const queryClient = useQueryClient();
   
   const [user, setUser] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState('news');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [editingItem, setEditingItem] = useState<any>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -69,29 +75,103 @@ export default function AdminDashboard() {
     };
   };
 
-  // News Management
-  const { data: newsArticles } = useQuery<NewsArticle[]>({
+  // Data queries with proper auth headers
+  const { data: newsArticles = [], isLoading: newsLoading } = useQuery<NewsArticle[]>({
     queryKey: ['/api/admin/news'],
-    meta: {
-      headers: getAuthHeaders(),
+    queryFn: async () => {
+      const res = await fetch('/api/admin/news', { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch news');
+      return res.json();
     },
+    enabled: !!user
   });
 
+  const { data: seasons = [] } = useQuery<Season[]>({
+    queryKey: ['/api/seasons'],
+    queryFn: async () => {
+      const res = await fetch('/api/seasons');
+      if (!res.ok) throw new Error('Failed to fetch seasons');
+      return res.json();
+    },
+    enabled: !!user
+  });
+
+  const { data: team = [] } = useQuery<TeamMember[]>({
+    queryKey: ['/api/admin/team'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/team', { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch team');
+      return res.json();
+    },
+    enabled: !!user
+  });
+
+  const { data: votingSites = [] } = useQuery<VotingSite[]>({
+    queryKey: ['/api/admin/voting-sites'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/voting-sites', { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch voting sites');
+      return res.json();
+    },
+    enabled: !!user
+  });
+
+  const { data: gallery = [] } = useQuery<GalleryImage[]>({
+    queryKey: ['/api/admin/gallery'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/gallery', { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch gallery');
+      return res.json();
+    },
+    enabled: !!user
+  });
+
+  const { data: store = [] } = useQuery<StoreItem[]>({
+    queryKey: ['/api/admin/store'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/store', { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch store');
+      return res.json();
+    },
+    enabled: !!user
+  });
+
+  const { data: serverConfig } = useQuery<ServerConfig>({
+    queryKey: ['/api/admin/server/config'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/server/config', { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch server config');
+      return res.json();
+    },
+    enabled: !!user
+  });
+
+  // Mutations
   const createNewsMutation = useMutation({
     mutationFn: async (data: any) => {
       const response = await fetch('/api/admin/news', {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          publishedAt: data.isPublished ? new Date().toISOString() : null,
+        }),
       });
-      if (!response.ok) throw new Error('Failed to create news');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to create news');
+      }
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/news'] });
       queryClient.invalidateQueries({ queryKey: ['/api/news'] });
-      toast({ title: t('admin.news.created') });
+      setShowCreateDialog(false);
+      toast({ title: 'Success', description: 'News article created successfully' });
     },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
   });
 
   const updateNewsMutation = useMutation({
@@ -99,16 +179,26 @@ export default function AdminDashboard() {
       const response = await fetch(`/api/admin/news/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          publishedAt: data.isPublished ? new Date().toISOString() : null,
+        }),
       });
-      if (!response.ok) throw new Error('Failed to update news');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to update news');
+      }
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/news'] });
       queryClient.invalidateQueries({ queryKey: ['/api/news'] });
-      toast({ title: t('admin.news.updated') });
+      setEditingItem(null);
+      toast({ title: 'Success', description: 'News article updated successfully' });
     },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
   });
 
   const deleteNewsMutation = useMutation({
@@ -123,8 +213,11 @@ export default function AdminDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/news'] });
       queryClient.invalidateQueries({ queryKey: ['/api/news'] });
-      toast({ title: t('admin.news.deleted') });
+      toast({ title: 'Success', description: 'News article deleted successfully' });
     },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
   });
 
   if (!user) {
@@ -132,156 +225,246 @@ export default function AdminDashboard() {
       <div className="min-h-screen flex items-center justify-center" data-testid="admin-loading">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{t('admin.loading')}</p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen py-16" data-testid="admin-dashboard">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="font-gaming text-3xl font-bold text-primary">
-              {t('admin.dashboard.title')}
-            </h1>
-            <p className="text-muted-foreground">
-              {t('admin.dashboard.welcome', { name: user.username })}
-            </p>
+  const renderOverview = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Card className="glass-card">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Total News</CardTitle>
+          <FileText className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-primary">{newsArticles.length}</div>
+          <p className="text-xs text-muted-foreground">
+            {newsArticles.filter(n => n.isPublished).length} published
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card className="glass-card">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Active Seasons</CardTitle>
+          <Calendar className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-primary">{seasons.length}</div>
+          <p className="text-xs text-muted-foreground">
+            {seasons.filter(s => s.isActive).length} active
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card className="glass-card">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Team Members</CardTitle>
+          <Users className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-primary">{team.length}</div>
+          <p className="text-xs text-muted-foreground">
+            {team.filter(t => t.isActive).length} active
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card className="glass-card">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Gallery Images</CardTitle>
+          <Image className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-primary">{gallery.length}</div>
+          <p className="text-xs text-muted-foreground">
+            {gallery.filter(g => g.isVisible).length} visible
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card className="glass-card">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Store Items</CardTitle>
+          <Store className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-primary">{store.length}</div>
+          <p className="text-xs text-muted-foreground">
+            {store.filter(s => s.isActive).length} active
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card className="glass-card">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Server Status</CardTitle>
+          <Server className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-primary">
+            {serverConfig?.isOnline ? 'Online' : 'Offline'}
           </div>
-          
-          <Button
-            variant="outline"
+          <p className="text-xs text-muted-foreground">
+            {serverConfig?.playerCount || 0} / {serverConfig?.maxPlayers || 0} players
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderNewsTab = () => (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">News Management</h3>
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogTrigger asChild>
+            <Button className="btn-gaming" data-testid="create-news">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Article
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Create News Article</DialogTitle>
+              <DialogDescription>Add a new news article to your website.</DialogDescription>
+            </DialogHeader>
+            <NewsCreateForm onSubmit={createNewsMutation.mutate} />
+          </DialogContent>
+        </Dialog>
+      </div>
+      
+      {newsLoading ? (
+        <div className="text-center py-8">Loading news articles...</div>
+      ) : (
+        <div className="grid gap-4">
+          {newsArticles.map((article) => (
+            <Card key={article.id} className="glass-card">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg">{article.title}</CardTitle>
+                    <CardDescription>{article.excerpt}</CardDescription>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge variant={article.isPublished ? 'default' : 'secondary'}>
+                        {article.isPublished ? 'Published' : 'Draft'}
+                      </Badge>
+                      {article.isFeatured && <Badge variant="destructive">Featured</Badge>}
+                      <Badge variant="outline">{article.category}</Badge>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setEditingItem(article)}
+                      data-testid={`edit-news-${article.id}`}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => deleteNewsMutation.mutate(article.id)}
+                      data-testid={`delete-news-${article.id}`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Edit Dialog */}
+      <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit News Article</DialogTitle>
+            <DialogDescription>Update your news article.</DialogDescription>
+          </DialogHeader>
+          {editingItem && (
+            <NewsEditForm 
+              article={editingItem} 
+              onSubmit={updateNewsMutation.mutate}
+              onCancel={() => setEditingItem(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-background" data-testid="admin-dashboard">
+      <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="container flex h-16 items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-xl font-gaming text-primary">Admin Dashboard</h1>
+            <Badge variant="outline">Welcome, {user.username}</Badge>
+          </div>
+          <Button 
+            variant="outline" 
             onClick={handleLogout}
             data-testid="logout-button"
           >
-            <LogOut className="mr-2" size={16} />
-            {t('admin.logout')}
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
           </Button>
         </div>
+      </header>
 
-        {/* Management Tabs */}
+      <div className="container py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="news" data-testid="tab-news">
-              <FileText className="mr-2" size={16} />
-              {t('admin.tabs.news')}
-            </TabsTrigger>
-            <TabsTrigger value="seasons" data-testid="tab-seasons">
-              <Calendar className="mr-2" size={16} />
-              {t('admin.tabs.seasons')}
-            </TabsTrigger>
-            <TabsTrigger value="team" data-testid="tab-team">
-              <Users className="mr-2" size={16} />
-              {t('admin.tabs.team')}
-            </TabsTrigger>
-            <TabsTrigger value="voting" data-testid="tab-voting">
-              <Vote className="mr-2" size={16} />
-              {t('admin.tabs.voting')}
-            </TabsTrigger>
-            <TabsTrigger value="gallery" data-testid="tab-gallery">
-              <Image className="mr-2" size={16} />
-              {t('admin.tabs.gallery')}
-            </TabsTrigger>
-            <TabsTrigger value="store" data-testid="tab-store">
-              <Store className="mr-2" size={16} />
-              {t('admin.tabs.store')}
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-7">
+            <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
+            <TabsTrigger value="news" data-testid="tab-news">News</TabsTrigger>
+            <TabsTrigger value="seasons" data-testid="tab-seasons">Seasons</TabsTrigger>
+            <TabsTrigger value="team" data-testid="tab-team">Team</TabsTrigger>
+            <TabsTrigger value="voting" data-testid="tab-voting">Voting</TabsTrigger>
+            <TabsTrigger value="gallery" data-testid="tab-gallery">Gallery</TabsTrigger>
+            <TabsTrigger value="store" data-testid="tab-store">Store</TabsTrigger>
           </TabsList>
 
-          {/* News Management */}
+          <TabsContent value="overview" className="space-y-6">
+            {renderOverview()}
+          </TabsContent>
+
           <TabsContent value="news" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-gaming text-xl text-primary">{t('admin.news.title')}</h2>
-              <NewsCreateForm onSubmit={createNewsMutation.mutate} />
-            </div>
-            
-            <div className="grid gap-4">
-              {newsArticles?.map((article) => (
-                <NewsEditCard
-                  key={article.id}
-                  article={article}
-                  onUpdate={updateNewsMutation.mutate}
-                  onDelete={deleteNewsMutation.mutate}
-                />
-              ))}
-            </div>
+            {renderNewsTab()}
           </TabsContent>
 
-          {/* Seasons Management */}
           <TabsContent value="seasons" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-gaming text-xl text-primary">{t('admin.seasons.title')}</h2>
-              <Button data-testid="create-season-button">
-                <Plus className="mr-2" size={16} />
-                {t('admin.seasons.create')}
-              </Button>
-            </div>
-            
-            <div className="text-center py-12 text-muted-foreground">
-              {t('admin.coming_soon')}
+            <div className="text-center text-muted-foreground py-8">
+              Season management functionality coming soon...
             </div>
           </TabsContent>
 
-          {/* Team Management */}
           <TabsContent value="team" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-gaming text-xl text-primary">{t('admin.team.title')}</h2>
-              <Button data-testid="create-team-member-button">
-                <Plus className="mr-2" size={16} />
-                {t('admin.team.create')}
-              </Button>
-            </div>
-            
-            <div className="text-center py-12 text-muted-foreground">
-              {t('admin.coming_soon')}
+            <div className="text-center text-muted-foreground py-8">
+              Team management functionality coming soon...
             </div>
           </TabsContent>
 
-          {/* Voting Management */}
           <TabsContent value="voting" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-gaming text-xl text-primary">{t('admin.voting.title')}</h2>
-              <Button data-testid="create-voting-site-button">
-                <Plus className="mr-2" size={16} />
-                {t('admin.voting.create')}
-              </Button>
-            </div>
-            
-            <div className="text-center py-12 text-muted-foreground">
-              {t('admin.coming_soon')}
+            <div className="text-center text-muted-foreground py-8">
+              Voting sites management functionality coming soon...
             </div>
           </TabsContent>
 
-          {/* Gallery Management */}
           <TabsContent value="gallery" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-gaming text-xl text-primary">{t('admin.gallery.title')}</h2>
-              <Button data-testid="create-gallery-image-button">
-                <Plus className="mr-2" size={16} />
-                {t('admin.gallery.create')}
-              </Button>
-            </div>
-            
-            <div className="text-center py-12 text-muted-foreground">
-              {t('admin.coming_soon')}
+            <div className="text-center text-muted-foreground py-8">
+              Gallery management functionality coming soon...
             </div>
           </TabsContent>
 
-          {/* Store Management */}
           <TabsContent value="store" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-gaming text-xl text-primary">{t('admin.store.title')}</h2>
-              <Button data-testid="create-store-item-button">
-                <Plus className="mr-2" size={16} />
-                {t('admin.store.create')}
-              </Button>
-            </div>
-            
-            <div className="text-center py-12 text-muted-foreground">
-              {t('admin.coming_soon')}
+            <div className="text-center text-muted-foreground py-8">
+              Store management functionality coming soon...
             </div>
           </TabsContent>
         </Tabs>
@@ -292,8 +475,6 @@ export default function AdminDashboard() {
 
 // News Create Form Component
 function NewsCreateForm({ onSubmit }: { onSubmit: (data: any) => void }) {
-  const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
@@ -306,10 +487,7 @@ function NewsCreateForm({ onSubmit }: { onSubmit: (data: any) => void }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
-      ...formData,
-      publishedAt: formData.isPublished ? new Date().toISOString() : null,
-    });
+    onSubmit(formData);
     setFormData({
       title: '',
       excerpt: '',
@@ -319,206 +497,226 @@ function NewsCreateForm({ onSubmit }: { onSubmit: (data: any) => void }) {
       isPublished: false,
       isFeatured: false,
     });
-    setIsOpen(false);
   };
 
-  if (!isOpen) {
-    return (
-      <Button onClick={() => setIsOpen(true)} data-testid="create-news-button">
-        <Plus className="mr-2" size={16} />
-        {t('admin.news.create')}
-      </Button>
-    );
-  }
-
   return (
-    <Card className="w-full max-w-2xl">
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle>{t('admin.news.create')}</CardTitle>
-          <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
-            <X size={16} />
-          </Button>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="title">Title</Label>
+        <Input
+          id="title"
+          value={formData.title}
+          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+          required
+          data-testid="news-title-input"
+        />
+      </div>
+      
+      <div>
+        <Label htmlFor="excerpt">Excerpt</Label>
+        <Textarea
+          id="excerpt"
+          value={formData.excerpt}
+          onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+          required
+          data-testid="news-excerpt-input"
+        />
+      </div>
+      
+      <div>
+        <Label htmlFor="content">Content</Label>
+        <Textarea
+          id="content"
+          value={formData.content}
+          onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+          required
+          rows={6}
+          data-testid="news-content-input"
+        />
+      </div>
+      
+      <div>
+        <Label htmlFor="category">Category</Label>
+        <Select
+          value={formData.category}
+          onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+        >
+          <SelectTrigger data-testid="news-category-select">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="update">Update</SelectItem>
+            <SelectItem value="event">Event</SelectItem>
+            <SelectItem value="community">Community</SelectItem>
+            <SelectItem value="tournament">Tournament</SelectItem>
+            <SelectItem value="maintenance">Maintenance</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div>
+        <Label htmlFor="imageUrl">Image URL (optional)</Label>
+        <Input
+          id="imageUrl"
+          value={formData.imageUrl}
+          onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
+          placeholder="https://example.com/image.jpg"
+          data-testid="news-image-input"
+        />
+      </div>
+      
+      <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="isPublished"
+            checked={formData.isPublished}
+            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPublished: checked }))}
+            data-testid="news-published-switch"
+          />
+          <Label htmlFor="isPublished">Published</Label>
         </div>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="title">{t('admin.news.form.title')}</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              required
-              data-testid="news-title-input"
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="excerpt">{t('admin.news.form.excerpt')}</Label>
-            <Textarea
-              id="excerpt"
-              value={formData.excerpt}
-              onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
-              required
-              data-testid="news-excerpt-input"
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="content">{t('admin.news.form.content')}</Label>
-            <Textarea
-              id="content"
-              value={formData.content}
-              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              required
-              rows={6}
-              data-testid="news-content-input"
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="category">{t('admin.news.form.category')}</Label>
-            <Select
-              value={formData.category}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
-            >
-              <SelectTrigger data-testid="news-category-select">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="update">Update</SelectItem>
-                <SelectItem value="event">Event</SelectItem>
-                <SelectItem value="community">Community</SelectItem>
-                <SelectItem value="tournament">Tournament</SelectItem>
-                <SelectItem value="maintenance">Maintenance</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <Label htmlFor="imageUrl">{t('admin.news.form.image_url')}</Label>
-            <Input
-              id="imageUrl"
-              value={formData.imageUrl}
-              onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-              placeholder="https://example.com/image.jpg"
-              data-testid="news-image-input"
-            />
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isPublished"
-                checked={formData.isPublished}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPublished: checked }))}
-                data-testid="news-published-switch"
-              />
-              <Label htmlFor="isPublished">{t('admin.news.form.published')}</Label>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isFeatured"
-                checked={formData.isFeatured}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isFeatured: checked }))}
-                data-testid="news-featured-switch"
-              />
-              <Label htmlFor="isFeatured">{t('admin.news.form.featured')}</Label>
-            </div>
-          </div>
-          
-          <div className="flex space-x-2">
-            <Button type="submit" className="btn-gaming" data-testid="save-news-button">
-              <Save className="mr-2" size={16} />
-              {t('admin.save')}
-            </Button>
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-              {t('admin.cancel')}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+        
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="isFeatured"
+            checked={formData.isFeatured}
+            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isFeatured: checked }))}
+            data-testid="news-featured-switch"
+          />
+          <Label htmlFor="isFeatured">Featured</Label>
+        </div>
+      </div>
+      
+      <Button type="submit" className="btn-gaming" data-testid="save-news-button">
+        <Save className="mr-2" size={16} />
+        Create Article
+      </Button>
+    </form>
   );
 }
 
-// News Edit Card Component
-function NewsEditCard({ 
+// News Edit Form Component
+function NewsEditForm({ 
   article, 
-  onUpdate, 
-  onDelete 
+  onSubmit, 
+  onCancel 
 }: { 
   article: NewsArticle; 
-  onUpdate: (data: any) => void; 
-  onDelete: (id: string) => void;
+  onSubmit: (data: any) => void; 
+  onCancel: () => void;
 }) {
-  const { t } = useTranslation();
-  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    title: article.title,
+    excerpt: article.excerpt,
+    content: article.content,
+    category: article.category,
+    imageUrl: article.imageUrl || '',
+    isPublished: article.isPublished,
+    isFeatured: article.isFeatured,
+  });
 
-  if (isEditing) {
-    // Edit form would go here - simplified for brevity
-    return (
-      <Card data-testid={`news-edit-${article.id}`}>
-        <CardContent className="p-4">
-          <div className="text-center py-8 text-muted-foreground">
-            {t('admin.edit_form_placeholder')}
-          </div>
-          <div className="flex space-x-2">
-            <Button size="sm" onClick={() => setIsEditing(false)}>
-              {t('admin.cancel')}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ id: article.id, ...formData });
+  };
 
   return (
-    <Card data-testid={`news-card-${article.id}`}>
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start">
-          <div className="flex-1">
-            <div className="flex items-center space-x-3 mb-2">
-              <h3 className="font-bold text-lg">{article.title}</h3>
-              <Badge variant={article.isPublished ? 'default' : 'secondary'}>
-                {article.isPublished ? t('admin.published') : t('admin.draft')}
-              </Badge>
-              {article.isFeatured && (
-                <Badge className="bg-primary text-primary-foreground">
-                  {t('admin.featured')}
-                </Badge>
-              )}
-            </div>
-            <p className="text-muted-foreground text-sm mb-2">{article.excerpt}</p>
-            <p className="text-xs text-muted-foreground">
-              {t('admin.category')}: {article.category} | {t('admin.created')}: {
-                article.createdAt ? new Date(article.createdAt).toLocaleDateString() : 'N/A'
-              }
-            </p>
-          </div>
-          
-          <div className="flex space-x-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setIsEditing(true)}
-              data-testid={`edit-news-${article.id}`}
-            >
-              <Edit size={16} />
-            </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={() => onDelete(article.id)}
-              data-testid={`delete-news-${article.id}`}
-            >
-              <Trash2 size={16} />
-            </Button>
-          </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="edit-title">Title</Label>
+        <Input
+          id="edit-title"
+          value={formData.title}
+          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+          required
+          data-testid="edit-news-title-input"
+        />
+      </div>
+      
+      <div>
+        <Label htmlFor="edit-excerpt">Excerpt</Label>
+        <Textarea
+          id="edit-excerpt"
+          value={formData.excerpt}
+          onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+          required
+          data-testid="edit-news-excerpt-input"
+        />
+      </div>
+      
+      <div>
+        <Label htmlFor="edit-content">Content</Label>
+        <Textarea
+          id="edit-content"
+          value={formData.content}
+          onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+          required
+          rows={6}
+          data-testid="edit-news-content-input"
+        />
+      </div>
+      
+      <div>
+        <Label htmlFor="edit-category">Category</Label>
+        <Select
+          value={formData.category}
+          onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+        >
+          <SelectTrigger data-testid="edit-news-category-select">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="update">Update</SelectItem>
+            <SelectItem value="event">Event</SelectItem>
+            <SelectItem value="community">Community</SelectItem>
+            <SelectItem value="tournament">Tournament</SelectItem>
+            <SelectItem value="maintenance">Maintenance</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div>
+        <Label htmlFor="edit-imageUrl">Image URL (optional)</Label>
+        <Input
+          id="edit-imageUrl"
+          value={formData.imageUrl}
+          onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
+          placeholder="https://example.com/image.jpg"
+          data-testid="edit-news-image-input"
+        />
+      </div>
+      
+      <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="edit-isPublished"
+            checked={formData.isPublished}
+            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPublished: checked }))}
+            data-testid="edit-news-published-switch"
+          />
+          <Label htmlFor="edit-isPublished">Published</Label>
         </div>
-      </CardContent>
-    </Card>
+        
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="edit-isFeatured"
+            checked={formData.isFeatured}
+            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isFeatured: checked }))}
+            data-testid="edit-news-featured-switch"
+          />
+          <Label htmlFor="edit-isFeatured">Featured</Label>
+        </div>
+      </div>
+      
+      <div className="flex space-x-2">
+        <Button type="submit" className="btn-gaming" data-testid="update-news-button">
+          <Save className="mr-2" size={16} />
+          Update Article
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
+    </form>
   );
 }

@@ -253,6 +253,153 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Team management routes
+  app.get('/api/admin/team', authenticateToken, async (req, res) => {
+    try {
+      const team = await storage.getActiveTeamMembers();
+      res.json(team);
+    } catch (error) {
+      console.error('Error fetching team:', error);
+      res.status(500).json({ message: 'Failed to fetch team' });
+    }
+  });
+
+  app.post('/api/admin/team', authenticateToken, async (req, res) => {
+    try {
+      const validatedData = insertTeamMemberSchema.parse(req.body);
+      const member = await storage.createTeamMember(validatedData);
+      res.json(member);
+    } catch (error) {
+      console.error('Error creating team member:', error);
+      res.status(500).json({ message: 'Failed to create team member' });
+    }
+  });
+
+  app.put('/api/admin/team/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = insertTeamMemberSchema.partial().parse(req.body);
+      const member = await storage.updateTeamMember(id, validatedData);
+      res.json(member);
+    } catch (error) {
+      console.error('Error updating team member:', error);
+      res.status(500).json({ message: 'Failed to update team member' });
+    }
+  });
+
+  // Voting sites management routes
+  app.get('/api/admin/voting-sites', authenticateToken, async (req, res) => {
+    try {
+      const sites = await storage.getActiveVotingSites();
+      res.json(sites);
+    } catch (error) {
+      console.error('Error fetching voting sites:', error);
+      res.status(500).json({ message: 'Failed to fetch voting sites' });
+    }
+  });
+
+  app.post('/api/admin/voting-sites', authenticateToken, async (req, res) => {
+    try {
+      const validatedData = insertVotingSiteSchema.parse(req.body);
+      const site = await storage.createVotingSite(validatedData);
+      res.json(site);
+    } catch (error) {
+      console.error('Error creating voting site:', error);
+      res.status(500).json({ message: 'Failed to create voting site' });
+    }
+  });
+
+  app.put('/api/admin/voting-sites/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = insertVotingSiteSchema.partial().parse(req.body);
+      const site = await storage.updateVotingSite(id, validatedData);
+      res.json(site);
+    } catch (error) {
+      console.error('Error updating voting site:', error);
+      res.status(500).json({ message: 'Failed to update voting site' });
+    }
+  });
+
+  // Gallery management routes
+  app.get('/api/admin/gallery', authenticateToken, async (req, res) => {
+    try {
+      const images = await storage.getVisibleGalleryImages();
+      res.json(images);
+    } catch (error) {
+      console.error('Error fetching gallery:', error);
+      res.status(500).json({ message: 'Failed to fetch gallery' });
+    }
+  });
+
+  app.post('/api/admin/gallery', authenticateToken, async (req, res) => {
+    try {
+      const validatedData = insertGalleryImageSchema.parse(req.body);
+      const image = await storage.createGalleryImage(validatedData);
+      res.json(image);
+    } catch (error) {
+      console.error('Error creating gallery image:', error);
+      res.status(500).json({ message: 'Failed to create gallery image' });
+    }
+  });
+
+  app.put('/api/admin/gallery/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = insertGalleryImageSchema.partial().parse(req.body);
+      const image = await storage.updateGalleryImage(id, validatedData);
+      res.json(image);
+    } catch (error) {
+      console.error('Error updating gallery image:', error);
+      res.status(500).json({ message: 'Failed to update gallery image' });
+    }
+  });
+
+  // Store management routes
+  app.get('/api/admin/store', authenticateToken, async (req, res) => {
+    try {
+      const items = await storage.getActiveStoreItems();
+      res.json(items);
+    } catch (error) {
+      console.error('Error fetching store items:', error);
+      res.status(500).json({ message: 'Failed to fetch store items' });
+    }
+  });
+
+  app.post('/api/admin/store', authenticateToken, async (req, res) => {
+    try {
+      const validatedData = insertStoreItemSchema.parse(req.body);
+      const item = await storage.createStoreItem(validatedData);
+      res.json(item);
+    } catch (error) {
+      console.error('Error creating store item:', error);
+      res.status(500).json({ message: 'Failed to create store item' });
+    }
+  });
+
+  app.put('/api/admin/store/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = insertStoreItemSchema.partial().parse(req.body);
+      const item = await storage.updateStoreItem(id, validatedData);
+      res.json(item);
+    } catch (error) {
+      console.error('Error updating store item:', error);
+      res.status(500).json({ message: 'Failed to update store item' });
+    }
+  });
+
+  // Server configuration
+  app.get('/api/admin/server/config', authenticateToken, async (req, res) => {
+    try {
+      const config = await storage.getServerConfig();
+      res.json(config);
+    } catch (error) {
+      console.error('Error fetching server config:', error);
+      res.status(500).json({ message: 'Failed to fetch server config' });
+    }
+  });
+
   app.put('/api/admin/server/config', authenticateToken, async (req, res) => {
     try {
       const config = await storage.updateServerConfig(req.body);
