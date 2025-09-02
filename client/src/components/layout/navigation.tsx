@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -46,7 +46,7 @@ export default function Navigation() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-6">
+          <div className="hidden md:flex space-x-6 items-center">
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
@@ -63,6 +63,16 @@ export default function Navigation() {
                 </span>
               </Link>
             ))}
+            
+            {/* VIP Portal Link */}
+            <Link
+              href="/customer/login"
+              className="ml-4 px-3 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center gap-2"
+              data-testid="nav-customer-portal"
+            >
+              <Crown className="h-4 w-4" />
+              <span className="font-medium">VIP Portal</span>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -98,6 +108,17 @@ export default function Navigation() {
                   </span>
                 </Link>
               ))}
+              
+              {/* Mobile VIP Portal Link */}
+              <Link
+                href="/customer/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="mt-3 p-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg flex items-center gap-2 font-medium"
+                data-testid="mobile-nav-customer-portal"
+              >
+                <Crown className="h-4 w-4" />
+                VIP Portal
+              </Link>
             </div>
           </div>
         )}

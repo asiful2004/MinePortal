@@ -15,6 +15,9 @@ import About from "@/pages/about";
 import Store from "@/pages/store";
 import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
+import CustomerLogin from "@/pages/customer/login";
+import CustomerDashboard from "@/pages/customer/dashboard";
+import CustomerProfile from "@/pages/customer/profile";
 import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";
 
@@ -39,6 +42,10 @@ function Router() {
           <Route path="/admin" component={AdminLogin} />
           <Route path="/admin/login" component={AdminLogin} />
           <Route path="/admin/dashboard" component={AdminDashboard} />
+          <Route path="/customer" component={CustomerLogin} />
+          <Route path="/customer/login" component={CustomerLogin} />
+          <Route path="/customer/dashboard" component={CustomerDashboard} />
+          <Route path="/customer/profile" component={CustomerProfile} />
           <Route path="/register" component={Register} />
           <Route component={NotFound} />
         </Switch>

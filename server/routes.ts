@@ -160,6 +160,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Authentication routes
+  app.post('/api/auth/customer-login', async (req, res) => {
+    try {
+      const { username, password } = req.body;
+
+      if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required' });
+      }
+
+      const user = await storage.getUserByUsername(username);
+      if (!user) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+      }
+
+      // Check if user has player role for customer portal
+      if (user.role !== 'player') {
+        return res.status(403).json({ message: 'Customer portal is only for player accounts' });
+      }
+
+      const isValidPassword = await storage.verifyPassword(password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+      }
+
+      const token = jwt.sign(
+        { userId: user.id, username: user.username, role: user.role },
+        JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+
+      // Don't send password in response
+      const { password: _, ...userWithoutPassword } = user;
+
+      res.json({
+        message: 'Login successful',
+        token,
+        user: userWithoutPassword
+      });
+    } catch (error) {
+      console.error('Customer login error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
   app.post('/api/auth/login', async (req, res) => {
     try {
       const { username, password } = req.body;
