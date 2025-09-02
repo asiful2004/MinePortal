@@ -5,7 +5,7 @@
 -- Dumped from database version 16.9 (84ade85)
 -- Dumped by pg_dump version 16.9
 
--- Started on 2025-09-02 15:13:06 UTC
+-- Started on 2025-09-02 15:54:24 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -173,7 +173,7 @@ CREATE TABLE public.users (
 
 
 --
--- TOC entry 222 (class 1259 OID 16545)
+-- TOC entry 222 (class 1259 OID 16546)
 -- Name: voting_sites; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -240,7 +240,7 @@ COPY public.server_config (id, name, ip, description, version, max_players, is_o
 --
 
 COPY public.store_items (id, name, description, price, category, features, image_url, is_popular, is_active, "order", created_at) FROM stdin;
-75bff717-3ae7-4b1a-9f2f-71c70a75b704	VIP +	Vip + rank is Pwerfull Rank in the server.	$0.1	ranks	[]		f	t	0	2025-09-02 14:40:08.909135
+75bff717-3ae7-4b1a-9f2f-71c70a75b704	VIP +	Vip + rank is Pwerfull Rank in the server.	$0.1	ranks	[]	\N	f	t	0	2025-09-02 14:40:08.909135
 be3157eb-03d8-4d1a-bb6b-44943401b5b2	Legendary Crate Key	Open legendary crates for amazing rewards!	$4.99	items	["Rare Items", "Exclusive Tools", "Special Blocks", "Bonus Money"]	\N	f	t	2	2025-09-02 07:54:37.160574
 db4bcb65-9a25-42c9-940a-bd9c3b180adf	Money Boost Package	Get a head start with instant in-game money!	$14.99	items	["$50,000 In-Game Money", "2x Money Multiplier", "Exclusive Items"]	\N	t	t	3	2025-09-02 07:54:37.160574
 \.
@@ -268,11 +268,12 @@ COPY public.team_members (id, name, role, description, avatar_url, "order", is_a
 
 COPY public.users (id, username, password, role, created_at, updated_at, email, avatar_url, is_active) FROM stdin;
 c2cab099-29e3-4dc7-afda-33a6ae65b87b	admin	$2b$10$.LDGztY62xqPHwC.LfUN.eWkUtF1s/9iNChMROfJlfLIJZknG9ol.	admin	2025-09-02 07:41:02.61532	2025-09-02 07:41:02.61532	\N	\N	t
+d44d94a1-379d-46e9-8f8f-11d6f0b11aed	asif	$2b$10$R/V/2qyjmxfgZCIUBS0W2OpWWQPRK8PMZ0cOnoa.bW3pZu5dXsIo2	player	2025-09-02 15:51:47.179125	2025-09-02 15:51:47.179125	asiful2004@yahoo.com	\N	t
 \.
 
 
 --
--- TOC entry 3416 (class 0 OID 16545)
+-- TOC entry 3416 (class 0 OID 16546)
 -- Dependencies: 222
 -- Data for Name: voting_sites; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -285,7 +286,7 @@ fb8694bb-2ea0-42b7-b414-921779317013	MinecraftServers.org	https://minecraftserve
 
 
 --
--- TOC entry 3248 (class 2606 OID 16555)
+-- TOC entry 3248 (class 2606 OID 16556)
 -- Name: gallery_images gallery_images_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -294,7 +295,7 @@ ALTER TABLE ONLY public.gallery_images
 
 
 --
--- TOC entry 3250 (class 2606 OID 16557)
+-- TOC entry 3250 (class 2606 OID 16558)
 -- Name: news_articles news_articles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -303,7 +304,7 @@ ALTER TABLE ONLY public.news_articles
 
 
 --
--- TOC entry 3252 (class 2606 OID 16559)
+-- TOC entry 3252 (class 2606 OID 16560)
 -- Name: seasons seasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -312,7 +313,7 @@ ALTER TABLE ONLY public.seasons
 
 
 --
--- TOC entry 3254 (class 2606 OID 16561)
+-- TOC entry 3254 (class 2606 OID 16562)
 -- Name: server_config server_config_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -321,7 +322,7 @@ ALTER TABLE ONLY public.server_config
 
 
 --
--- TOC entry 3256 (class 2606 OID 16563)
+-- TOC entry 3256 (class 2606 OID 16564)
 -- Name: store_items store_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -330,7 +331,7 @@ ALTER TABLE ONLY public.store_items
 
 
 --
--- TOC entry 3258 (class 2606 OID 16565)
+-- TOC entry 3258 (class 2606 OID 16566)
 -- Name: team_members team_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -339,7 +340,7 @@ ALTER TABLE ONLY public.team_members
 
 
 --
--- TOC entry 3260 (class 2606 OID 16567)
+-- TOC entry 3260 (class 2606 OID 16568)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -348,7 +349,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3262 (class 2606 OID 16569)
+-- TOC entry 3262 (class 2606 OID 16570)
 -- Name: users users_username_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -357,7 +358,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3264 (class 2606 OID 16571)
+-- TOC entry 3264 (class 2606 OID 16572)
 -- Name: voting_sites voting_sites_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -366,7 +367,7 @@ ALTER TABLE ONLY public.voting_sites
 
 
 --
--- TOC entry 3265 (class 2606 OID 16572)
+-- TOC entry 3265 (class 2606 OID 16573)
 -- Name: news_articles news_articles_author_id_users_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -374,7 +375,7 @@ ALTER TABLE ONLY public.news_articles
     ADD CONSTRAINT news_articles_author_id_users_id_fk FOREIGN KEY (author_id) REFERENCES public.users(id);
 
 
--- Completed on 2025-09-02 15:13:17 UTC
+-- Completed on 2025-09-02 15:54:29 UTC
 
 --
 -- PostgreSQL database dump complete
