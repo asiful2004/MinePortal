@@ -133,7 +133,21 @@ export default function AdminLogin() {
               </Button>
             </form>
             
-            <div className="mt-6 p-4 bg-muted/20 rounded-lg">
+            <div className="mt-6 text-center">
+              <p className="text-muted-foreground">
+                New to SkyBlock Legends?{' '}
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-primary hover:text-primary/80"
+                  onClick={() => setLocation('/register')}
+                  data-testid="link-register"
+                >
+                  Create an account
+                </Button>
+              </p>
+            </div>
+            
+            <div className="mt-4 p-4 bg-muted/20 rounded-lg">
               <p className="text-xs text-muted-foreground text-center">
                 {t('admin.login.default_credentials')}
               </p>

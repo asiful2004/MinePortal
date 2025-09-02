@@ -15,6 +15,7 @@ import About from "@/pages/about";
 import Store from "@/pages/store";
 import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
+import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";
 
 // Layout components
@@ -38,6 +39,7 @@ function Router() {
           <Route path="/admin" component={AdminLogin} />
           <Route path="/admin/login" component={AdminLogin} />
           <Route path="/admin/dashboard" component={AdminDashboard} />
+          <Route path="/register" component={Register} />
           <Route component={NotFound} />
         </Switch>
       </main>

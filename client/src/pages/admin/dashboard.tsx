@@ -32,7 +32,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import type { NewsArticle, Season, TeamMember, VotingSite, GalleryImage, StoreItem, ServerConfig } from '@shared/schema';
+import type { NewsArticle, Season, TeamMember, VotingSite, GalleryImage, StoreItem, ServerConfig, User } from '@shared/schema';
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
@@ -51,6 +51,7 @@ export default function AdminDashboard() {
   const [showVotingDialog, setShowVotingDialog] = useState(false);
   const [showGalleryDialog, setShowGalleryDialog] = useState(false);
   const [showStoreDialog, setShowStoreDialog] = useState(false);
+  const [showUserDialog, setShowUserDialog] = useState(false);
   
   // Editing states for different sections
   const [editingSeason, setEditingSeason] = useState<any>(null);
@@ -58,6 +59,7 @@ export default function AdminDashboard() {
   const [editingVoting, setEditingVoting] = useState<any>(null);
   const [editingGallery, setEditingGallery] = useState<any>(null);
   const [editingStore, setEditingStore] = useState<any>(null);
+  const [editingUser, setEditingUser] = useState<any>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -155,6 +157,16 @@ export default function AdminDashboard() {
     queryFn: async () => {
       const res = await fetch('/api/admin/server/config', { headers: getAuthHeaders() });
       if (!res.ok) throw new Error('Failed to fetch server config');
+      return res.json();
+    },
+    enabled: !!user
+  });
+
+  const { data: users = [] } = useQuery<User[]>({
+    queryKey: ['/api/admin/users'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/users', { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch users');
       return res.json();
     },
     enabled: !!user
@@ -553,6 +565,67 @@ export default function AdminDashboard() {
     }
   });
 
+  // User Management Mutations
+  const createUserMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to create user');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      toast({ title: 'Success', description: 'User created successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const updateUserMutation = useMutation({
+    mutationFn: async ({ id, ...data }: any) => {
+      const response = await fetch(`/api/admin/users/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to update user');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      toast({ title: 'Success', description: 'User updated successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/admin/users/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to delete user');
+      try {
+        return await response.json();
+      } catch {
+        return { success: true };
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      toast({ title: 'Success', description: 'User deleted successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center" data-testid="admin-loading">
@@ -627,6 +700,19 @@ export default function AdminDashboard() {
           <div className="text-2xl font-bold text-primary">{store.length}</div>
           <p className="text-xs text-muted-foreground">
             {store.filter(s => s.isActive).length} active
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card className="glass-card">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Registered Users</CardTitle>
+          <Users className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-primary">{users.length}</div>
+          <p className="text-xs text-muted-foreground">
+            {users.filter(u => u.isActive).length} active
           </p>
         </CardContent>
       </Card>
@@ -1042,7 +1128,7 @@ export default function AdminDashboard() {
 
       <div className="container py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
             <TabsTrigger value="news" data-testid="tab-news">News</TabsTrigger>
             <TabsTrigger value="seasons" data-testid="tab-seasons">Seasons</TabsTrigger>
@@ -1050,6 +1136,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="voting" data-testid="tab-voting">Voting</TabsTrigger>
             <TabsTrigger value="gallery" data-testid="tab-gallery">Gallery</TabsTrigger>
             <TabsTrigger value="store" data-testid="tab-store">Store</TabsTrigger>
+            <TabsTrigger value="users" data-testid="tab-users">Users</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -1078,6 +1165,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="store" className="space-y-6">
             {renderStoreTab()}
+          </TabsContent>
+
+          <TabsContent value="users" className="space-y-6">
+            {renderUsersTab()}
           </TabsContent>
         </Tabs>
       </div>
@@ -1209,6 +1300,30 @@ export default function AdminDashboard() {
               onSubmit={(data) => {updateStoreMutation.mutate({id: editingStore.id, ...data}); setEditingStore(null);}} 
             />
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* User Dialog */}
+      <Dialog open={showUserDialog} onOpenChange={setShowUserDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editingUser ? 'Edit User' : 'Add User'}</DialogTitle>
+            <DialogDescription>
+              {editingUser ? 'Update user information' : 'Add a new user.'}
+            </DialogDescription>
+          </DialogHeader>
+          <UserForm 
+            initialData={editingUser}
+            onSubmit={(data) => {
+              if (editingUser) {
+                updateUserMutation.mutate({ id: editingUser.id, ...data });
+              } else {
+                createUserMutation.mutate(data);
+              }
+              setShowUserDialog(false);
+              setEditingUser(null);
+            }}
+          />
         </DialogContent>
       </Dialog>
     </div>
@@ -1857,4 +1972,175 @@ function StoreForm({ onSubmit, initialData }: { onSubmit: (data: any) => void; i
       </Button>
     </form>
   );
-}
+};
+
+// Users Management
+const renderUsersTab = () => (
+  <div className="space-y-4">
+    <div className="flex justify-between items-center">
+      <h3 className="text-lg font-semibold">User Management</h3>
+      <Button 
+        onClick={() => {
+          setEditingUser(null);
+          setShowUserDialog(true);
+        }}
+        data-testid="button-add-user"
+      >
+        <Plus className="mr-2 h-4 w-4" />
+        Add User
+      </Button>
+    </div>
+    
+    <div className="grid gap-4">
+      {users.map((user) => (
+        <Card key={user.id} className="glass-card">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  {user.avatarUrl ? (
+                    <img 
+                      src={user.avatarUrl} 
+                      alt={user.username}
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    <Users className="h-6 w-6 text-primary" />
+                  )}
+                </div>
+                <div>
+                  <h4 className="font-semibold text-primary">{user.username}</h4>
+                  <p className="text-sm text-muted-foreground">{user.email || 'No email'}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                      {user.role}
+                    </Badge>
+                    <Badge variant={user.isActive ? 'default' : 'secondary'}>
+                      {user.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setEditingUser(user);
+                    setShowUserDialog(true);
+                  }}
+                  data-testid={`button-edit-user-${user.id}`}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    if (confirm('Are you sure you want to delete this user?')) {
+                      deleteUserMutation.mutate(user.id);
+                    }
+                  }}
+                  data-testid={`button-delete-user-${user.id}`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  </div>
+);
+
+// User Form Component
+const UserForm = ({ initialData, onSubmit }: { initialData?: any, onSubmit: (data: any) => void }) => {
+  const [formData, setFormData] = useState({
+    username: initialData?.username || '',
+    email: initialData?.email || '',
+    password: '',
+    role: initialData?.role || 'player',
+    avatarUrl: initialData?.avatarUrl || '',
+    isActive: initialData?.isActive ?? true,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Don't send password if empty on edit
+    const submitData = { ...formData };
+    if (initialData && !submitData.password) {
+      delete submitData.password;
+    }
+    
+    onSubmit(submitData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="user-username">Username</Label>
+        <Input
+          id="user-username"
+          value={formData.username}
+          onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="user-email">Email</Label>
+        <Input
+          id="user-email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+        />
+      </div>
+      <div>
+        <Label htmlFor="user-password">
+          Password {initialData ? '(leave empty to keep current)' : ''}
+        </Label>
+        <Input
+          id="user-password"
+          type="password"
+          value={formData.password}
+          onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+          required={!initialData}
+        />
+      </div>
+      <div>
+        <Label htmlFor="user-role">Role</Label>
+        <Select value={formData.role} onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="player">Player</SelectItem>
+            <SelectItem value="admin">Admin</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label htmlFor="user-avatar">Avatar URL</Label>
+        <Input
+          id="user-avatar"
+          type="url"
+          value={formData.avatarUrl}
+          onChange={(e) => setFormData(prev => ({ ...prev, avatarUrl: e.target.value }))}
+        />
+      </div>
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="user-active"
+          checked={formData.isActive}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+        />
+        <Label htmlFor="user-active">Active</Label>
+      </div>
+      <Button type="submit" className="w-full">
+        {initialData ? 'Update User' : 'Add User'}
+      </Button>
+    </form>
+  );
+};

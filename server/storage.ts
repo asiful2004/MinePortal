@@ -77,6 +77,14 @@ export interface IStorage {
   createStoreItem(item: InsertStoreItem): Promise<StoreItem>;
   updateStoreItem(id: string, item: Partial<InsertStoreItem>): Promise<StoreItem>;
   deleteStoreItem(id: string): Promise<void>;
+
+  // User Management
+  getAllUsers(): Promise<User[]>;
+  getUserById(id: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  updateUser(id: string, user: Partial<InsertUser>): Promise<User>;
+  deleteUser(id: string): Promise<void>;
+  getUserByUsername(username: string): Promise<User | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -351,6 +359,44 @@ export class DatabaseStorage implements IStorage {
   async deleteStoreItem(id: string): Promise<void> {
     const result = await db.delete(storeItems).where(eq(storeItems.id, id));
     console.log(`Deleted ${result.rowCount || 0} store item(s) with ID: ${id}`);
+  }
+
+  // User Management
+  async getAllUsers(): Promise<User[]> {
+    return db
+      .select()
+      .from(users)
+      .orderBy(users.createdAt);
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, id));
+    return user;
+  }
+
+  async updateUser(id: string, userData: Partial<InsertUser>): Promise<User> {
+    const updateData = { ...userData };
+    if (userData.password) {
+      updateData.password = await this.hashPassword(userData.password);
+    }
+    
+    const [updated] = await db
+      .update(users)
+      .set({
+        ...updateData,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    const result = await db.delete(users).where(eq(users.id, id));
+    console.log(`Deleted ${result.rowCount || 0} user(s) with ID: ${id}`);
   }
 }
 
