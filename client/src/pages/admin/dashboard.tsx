@@ -748,7 +748,7 @@ export default function AdminDashboard() {
 
       <div className="grid gap-4">
         {users.map((user: User) => (
-          <Card key={user.id} className="glass-card">
+          <Card key={user.id}>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -841,97 +841,111 @@ export default function AdminDashboard() {
   }
 
   const renderOverview = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <Card className="glass-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total News</CardTitle>
-          <FileText className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-primary">{newsArticles.length}</div>
-          <p className="text-xs text-muted-foreground">
-            {newsArticles.filter(n => n.isPublished).length} published
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card className="glass-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Active Seasons</CardTitle>
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-primary">{seasons.length}</div>
-          <p className="text-xs text-muted-foreground">
-            {seasons.filter(s => s.isActive).length} active
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card className="glass-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Team Members</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-primary">{team.length}</div>
-          <p className="text-xs text-muted-foreground">
-            {team.filter(t => t.isActive).length} active
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card className="glass-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Gallery Images</CardTitle>
-          <Image className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-primary">{gallery.length}</div>
-          <p className="text-xs text-muted-foreground">
-            {gallery.filter(g => g.isVisible).length} visible
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card className="glass-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Store Items</CardTitle>
-          <Store className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-primary">{store.length}</div>
-          <p className="text-xs text-muted-foreground">
-            {store.filter(s => s.isActive).length} active
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card className="glass-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Registered Users</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-primary">{users.length}</div>
-          <p className="text-xs text-muted-foreground">
-            {users.filter(u => u.isActive).length} active
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card className="glass-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Server Status</CardTitle>
-          <Server className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-primary">
-            {serverConfig?.isOnline ? 'Online' : 'Offline'}
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total News</p>
+              <p className="text-2xl font-bold">{newsArticles.length}</p>
+              <p className="text-xs text-muted-foreground">
+                {newsArticles.filter(n => n.isPublished).length} published
+              </p>
+            </div>
+            <FileText className="h-8 w-8 text-muted-foreground" />
           </div>
-          <p className="text-xs text-muted-foreground">
-            {serverConfig?.playerCount || 0} / {serverConfig?.maxPlayers || 0} players
-          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Active Seasons</p>
+              <p className="text-2xl font-bold">{seasons.length}</p>
+              <p className="text-xs text-muted-foreground">
+                {seasons.filter(s => s.isActive).length} active
+              </p>
+            </div>
+            <Calendar className="h-8 w-8 text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Team Members</p>
+              <p className="text-2xl font-bold">{team.length}</p>
+              <p className="text-xs text-muted-foreground">
+                {team.filter(t => t.isActive).length} active
+              </p>
+            </div>
+            <Users className="h-8 w-8 text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Gallery Images</p>
+              <p className="text-2xl font-bold">{gallery.length}</p>
+              <p className="text-xs text-muted-foreground">
+                {gallery.filter(g => g.isVisible).length} visible
+              </p>
+            </div>
+            <Image className="h-8 w-8 text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Store Items</p>
+              <p className="text-2xl font-bold">{store.length}</p>
+              <p className="text-xs text-muted-foreground">
+                {store.filter(s => s.isActive).length} active
+              </p>
+            </div>
+            <Store className="h-8 w-8 text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Registered Users</p>
+              <p className="text-2xl font-bold">{users.length}</p>
+              <p className="text-xs text-muted-foreground">
+                {users.filter(u => u.isActive).length} active
+              </p>
+            </div>
+            <Users className="h-8 w-8 text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Server Status</p>
+              <p className="text-2xl font-bold">
+                {serverConfig?.isOnline ? 'Online' : 'Offline'}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {serverConfig?.playerCount || 0} / {serverConfig?.maxPlayers || 0} players
+              </p>
+            </div>
+            <Server className="h-8 w-8 text-muted-foreground" />
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -943,7 +957,6 @@ export default function AdminDashboard() {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Seasons Management</h3>
         <Button 
-          className="btn-gaming" 
           data-testid="create-season"
           onClick={() => setShowSeasonDialog(true)}
         >
@@ -954,7 +967,7 @@ export default function AdminDashboard() {
 
       <div className="grid gap-4">
         {seasons.map((season) => (
-          <Card key={season.id} className="glass-card">
+          <Card key={season.id}>
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div className="flex-1">
@@ -1001,7 +1014,6 @@ export default function AdminDashboard() {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Team Management</h3>
         <Button 
-          className="btn-gaming" 
           data-testid="create-team"
           onClick={() => setShowTeamDialog(true)}
         >
@@ -1012,7 +1024,7 @@ export default function AdminDashboard() {
 
       <div className="grid gap-4">
         {team.map((member) => (
-          <Card key={member.id} className="glass-card">
+          <Card key={member.id}>
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div className="flex-1">
@@ -1057,7 +1069,6 @@ export default function AdminDashboard() {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Voting Sites Management</h3>
         <Button 
-          className="btn-gaming" 
           data-testid="create-voting"
           onClick={() => setShowVotingDialog(true)}
         >
@@ -1068,7 +1079,7 @@ export default function AdminDashboard() {
 
       <div className="grid gap-4">
         {votingSites.map((site) => (
-          <Card key={site.id} className="glass-card">
+          <Card key={site.id}>
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div className="flex-1">
@@ -1113,7 +1124,6 @@ export default function AdminDashboard() {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Gallery Management</h3>
         <Button 
-          className="btn-gaming" 
           data-testid="create-gallery"
           onClick={() => setShowGalleryDialog(true)}
         >
@@ -1124,7 +1134,7 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {gallery.map((image) => (
-          <Card key={image.id} className="glass-card">
+          <Card key={image.id}>
             <div className="aspect-video w-full overflow-hidden rounded-t-lg">
               <img
                 src={image.imageUrl}
@@ -1175,7 +1185,6 @@ export default function AdminDashboard() {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Store Management</h3>
         <Button 
-          className="btn-gaming" 
           data-testid="create-store"
           onClick={() => setShowStoreDialog(true)}
         >
@@ -1186,7 +1195,7 @@ export default function AdminDashboard() {
 
       <div className="grid gap-4">
         {store.map((item) => (
-          <Card key={item.id} className="glass-card">
+          <Card key={item.id}>
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div className="flex-1">
@@ -1232,7 +1241,7 @@ export default function AdminDashboard() {
         <h3 className="text-lg font-semibold">News Management</h3>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="btn-gaming" data-testid="create-news">
+            <Button data-testid="create-news">
               <Plus className="w-4 h-4 mr-2" />
               Create Article
             </Button>
@@ -1252,7 +1261,7 @@ export default function AdminDashboard() {
       ) : (
         <div className="grid gap-4">
           {newsArticles.map((article) => (
-            <Card key={article.id} className="glass-card">
+            <Card key={article.id}>
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
@@ -1365,24 +1374,27 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background" data-testid="admin-dashboard">
-      <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-xl font-gaming text-primary">Admin Dashboard</h1>
-            <Badge variant="outline">Welcome, {user.username}</Badge>
+      {/* Header */}
+      <header className="border-b bg-card">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
+              <p className="text-muted-foreground">Welcome back, {user.username}</p>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <Button variant="outline" size="sm" onClick={handleLogout} data-testid="logout-button">
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={handleLogout}
-            data-testid="logout-button"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
         </div>
       </header>
 
-      <div className="container py-6">
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
@@ -1432,7 +1444,7 @@ export default function AdminDashboard() {
             {renderUsersTab()}
           </TabsContent>
         </Tabs>
-      </div>
+      </main>
 
       {/* Season Dialog */}
       <Dialog open={showSeasonDialog} onOpenChange={setShowSeasonDialog}>
@@ -1705,7 +1717,7 @@ function NewsCreateForm({ onSubmit }: { onSubmit: (data: any) => void }) {
         </div>
       </div>
 
-      <Button type="submit" className="btn-gaming" data-testid="save-news-button">
+      <Button type="submit" data-testid="save-news-button">
         <Save className="mr-2" size={16} />
         Create Article
       </Button>
@@ -1827,7 +1839,7 @@ function NewsEditForm({
       </div>
 
       <div className="flex space-x-2">
-        <Button type="submit" className="btn-gaming" data-testid="update-news-button">
+        <Button type="submit" data-testid="update-news-button">
           <Save className="mr-2" size={16} />
           Update Article
         </Button>
