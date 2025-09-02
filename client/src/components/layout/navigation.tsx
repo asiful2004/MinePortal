@@ -64,15 +64,23 @@ export default function Navigation() {
               </Link>
             ))}
             
-            {/* VIP Portal Link */}
-            <Link
-              href="/customer/login"
-              className="ml-4 px-3 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center gap-2"
-              data-testid="nav-customer-portal"
-            >
-              <Crown className="h-4 w-4" />
-              <span className="font-medium">VIP Portal</span>
-            </Link>
+            {/* Login/Signup Links */}
+            <div className="flex items-center gap-3 ml-4">
+              <Link
+                href="/customer/login"
+                className="px-3 py-2 text-muted-foreground hover:text-primary transition-colors"
+                data-testid="nav-login"
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                className="px-3 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors"
+                data-testid="nav-signup"
+              >
+                Sign Up
+              </Link>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -109,16 +117,25 @@ export default function Navigation() {
                 </Link>
               ))}
               
-              {/* Mobile VIP Portal Link */}
-              <Link
-                href="/customer/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="mt-3 p-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg flex items-center gap-2 font-medium"
-                data-testid="mobile-nav-customer-portal"
-              >
-                <Crown className="h-4 w-4" />
-                VIP Portal
-              </Link>
+              {/* Mobile Login/Signup Links */}
+              <div className="mt-3 space-y-2">
+                <Link
+                  href="/customer/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-2 text-muted-foreground hover:text-primary transition-colors"
+                  data-testid="mobile-nav-login"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block p-3 bg-primary text-primary-foreground rounded-lg text-center font-medium"
+                  data-testid="mobile-nav-signup"
+                >
+                  Sign Up
+                </Link>
+              </div>
             </div>
           </div>
         )}

@@ -1,55 +1,71 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { User, Lock, LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Crown, Sparkles } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
+
+const loginSchema = z.object({
+  username: z.string().min(1, 'Username is required'),
+  password: z.string().min(1, 'Password is required'),
+});
+
+type LoginForm = z.infer<typeof loginSchema>;
 
 export default function CustomerLogin() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-  });
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const form = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      username: '',
+      password: '',
+    },
+  });
 
+  const onSubmit = async (data: LoginForm) => {
+    setIsLoading(true);
     try {
       const response = await fetch('/api/auth/customer-login', {
         method: 'POST',
+        body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        const result = await response.json();
+        localStorage.setItem('customer_token', result.token);
+        localStorage.setItem('customer_user', JSON.stringify(result.user));
+        
+        toast({
+          title: 'Login Successful',
+          description: `Welcome back, ${result.user.username}!`,
+        });
+        
+        setLocation('/customer/dashboard');
+      } else {
         const error = await response.json();
-        throw new Error(error.message || 'Login failed');
+        toast({
+          title: 'Login Failed',
+          description: error.message || 'Invalid credentials',
+          variant: 'destructive',
+        });
       }
-
-      const data = await response.json();
-      
-      // Store customer token and user data
-      localStorage.setItem('customer_token', data.token);
-      localStorage.setItem('customer_user', JSON.stringify(data.user));
-      
-      toast({
-        title: 'Welcome Back!',
-        description: 'Successfully logged into your VIP customer panel',
-      });
-
-      setLocation('/customer/dashboard');
     } catch (error) {
       toast({
         title: 'Login Failed',
-        description: error instanceof Error ? error.message : 'An error occurred',
+        description: 'Something went wrong. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -58,113 +74,109 @@ export default function CustomerLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-500"></div>
-      </div>
-
-      <div className="relative z-10 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Crown className="h-12 w-12 text-yellow-400" />
-            <div className="flex items-center gap-1">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-                VIP Portal
-              </h1>
-              <Sparkles className="h-6 w-6 text-yellow-400 animate-pulse" />
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <Card className="shadow-lg">
+          <CardHeader className="text-center space-y-2">
+            <div className="mx-auto w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+              <User className="h-6 w-6 text-primary-foreground" />
             </div>
-          </div>
-          <p className="text-lg text-purple-200">
-            Welcome to Your Exclusive Customer Experience
-          </p>
-        </div>
-
-        <Card className="glass-card backdrop-blur-xl bg-white/10 border-purple-300/30 shadow-2xl">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-white">
-              Customer Login
-            </CardTitle>
-            <CardDescription className="text-purple-200">
-              Access your premium dashboard
+            <CardTitle className="text-2xl font-bold">Customer Login</CardTitle>
+            <CardDescription>
+              Sign in to access your account and orders
             </CardDescription>
           </CardHeader>
+          
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="username" className="text-white font-medium">
-                  Username
-                </Label>
-                <Input
-                  id="username"
-                  type="text"
-                  value={formData.username}
-                  onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                  required
-                  className="bg-white/10 border-purple-300/50 text-white placeholder:text-purple-200/70 focus:border-purple-400 focus:ring-purple-400/20"
-                  placeholder="Enter your username"
-                  data-testid="input-customer-username"
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            {...field}
+                            type="text"
+                            placeholder="Enter your username"
+                            className="pl-10"
+                            data-testid="input-customer-username"
+                            disabled={isLoading}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-white font-medium">
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                  required
-                  className="bg-white/10 border-purple-300/50 text-white placeholder:text-purple-200/70 focus:border-purple-400 focus:ring-purple-400/20"
-                  placeholder="Enter your password"
-                  data-testid="input-customer-password"
+
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            {...field}
+                            type="password"
+                            placeholder="Enter your password"
+                            className="pl-10"
+                            data-testid="input-customer-password"
+                            disabled={isLoading}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
-                data-testid="button-customer-login"
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Logging in...
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Crown className="h-4 w-4" />
-                    Enter VIP Portal
-                  </div>
-                )}
-              </Button>
-            </form>
+
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isLoading}
+                  data-testid="button-customer-login"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      Signing in...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <LogIn className="h-4 w-4" />
+                      Sign In
+                    </div>
+                  )}
+                </Button>
+              </form>
+            </Form>
 
             <div className="mt-6 text-center">
-              <p className="text-purple-200/80 text-sm">
+              <p className="text-sm text-muted-foreground">
                 Don't have an account?{' '}
-                <button
-                  onClick={() => setLocation('/register')}
-                  className="text-yellow-400 hover:text-yellow-300 font-medium underline"
-                >
-                  Register now
-                </button>
+                <a href="/register" className="text-primary hover:underline font-medium">
+                  Sign up here
+                </a>
+              </p>
+            </div>
+
+            <div className="mt-4 p-4 bg-muted rounded-lg">
+              <p className="text-xs text-muted-foreground text-center">
+                Customer portal is for registered players only. 
+                <br />
+                Please contact support if you need assistance.
               </p>
             </div>
           </CardContent>
         </Card>
-
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => setLocation('/')}
-            className="text-purple-200/80 hover:text-white transition-colors"
-          >
-            ← Back to Home
-          </button>
-        </div>
       </div>
     </div>
   );
