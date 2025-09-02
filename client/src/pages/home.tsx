@@ -31,37 +31,31 @@ export default function Home() {
   return (
     <div className="min-h-screen" data-testid="home-page">
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary/3 via-background to-secondary/3">
-        {/* Subtle Background Elements */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-20 left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-secondary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/3 to-secondary/3 rounded-full blur-3xl animate-spin-slow"></div>
-        </div>
+      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+        {/* Clean Background */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-background via-muted/5 to-background"></div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center max-w-5xl mx-auto">
-            {/* Professional Logo */}
-            <div className="mb-8 flex justify-center">
-              <div className="relative group">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg border border-primary/20 group-hover:scale-105 transition-all duration-300">
-                  <span className="text-white font-gaming text-2xl font-bold">SL</span>
-                </div>
+            {/* Clean Logo */}
+            <div className="mb-6 flex justify-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center border border-primary/30">
+                <span className="text-white font-gaming text-xl font-bold">SL</span>
               </div>
             </div>
             
-            <h1 className="font-gaming text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight">
+            <h1 className="font-gaming text-3xl md:text-5xl font-bold mb-4 text-foreground leading-tight">
               {t('server.name')}
             </h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-xl mx-auto leading-relaxed">
               {t('server.description')}
             </p>
             
             {/* Unified Server Info Block */}
-            <Card className="glass-card max-w-2xl mx-auto mb-16 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300">
-              <CardContent className="p-8">
-                <div className="space-y-8 text-center">
+            <Card className="max-w-2xl mx-auto mb-12 bg-card/50 backdrop-blur border-border">
+              <CardContent className="p-6">
+                <div className="space-y-6 text-center">
                   {/* Server IP Section */}
                   <div className="space-y-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/60 rounded-xl flex items-center justify-center mx-auto">
@@ -106,23 +100,23 @@ export default function Home() {
               </CardContent>
             </Card>
             
-            {/* Professional CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {/* Clean CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button 
-                size="lg" 
-                className="btn-gaming px-8 py-4 text-lg font-semibold hover:scale-105 transition-all duration-300"
+                size="default" 
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2"
                 data-testid="join-server-button"
               >
-                <Play className="mr-2" size={20} />
+                <Play className="mr-2" size={16} />
                 {t('cta.join')}
               </Button>
               <Button 
-                size="lg" 
+                size="default" 
                 variant="outline" 
-                className="px-8 py-4 text-lg font-semibold border-2 border-secondary/60 text-secondary hover:bg-secondary hover:text-white hover:border-secondary transition-all duration-300"
+                className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground px-6 py-2"
                 data-testid="join-discord-button"
               >
-                <MessageCircle className="mr-2" size={20} />
+                <MessageCircle className="mr-2" size={16} />
                 {t('cta.discord')}
               </Button>
             </div>
