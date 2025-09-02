@@ -17,7 +17,7 @@ export default function Home() {
   const { data: serverConfig } = useServerStatus();
   
   const { data: recentNews } = useQuery<NewsArticle[]>({
-    queryKey: ['/api/news', { limit: 3 }],
+    queryKey: ['/api/news?limit=3'],
   });
 
   const { data: currentSeason } = useQuery<Season>({
@@ -174,10 +174,10 @@ export default function Home() {
                   
                   {currentSeason.features && Array.isArray(currentSeason.features) && (
                     <div className="space-y-4 mb-8">
-                      {currentSeason.features.slice(0, 4).map((feature, index) => (
+                      {(currentSeason.features as string[]).slice(0, 4).map((feature, index) => (
                         <div key={index} className="flex items-center space-x-3">
                           <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                          <span>{String(feature)}</span>
+                          <span>{feature}</span>
                         </div>
                       ))}
                     </div>
