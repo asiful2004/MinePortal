@@ -52,6 +52,7 @@ export interface IStorage {
   getAllSeasons(): Promise<Season[]>;
   createSeason(season: InsertSeason): Promise<Season>;
   updateSeason(id: string, season: Partial<InsertSeason>): Promise<Season>;
+  deleteSeason(id: string): Promise<void>;
 
   // Team
   getActiveTeamMembers(): Promise<TeamMember[]>;
@@ -217,6 +218,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(seasons.id, id))
       .returning();
     return updated;
+  }
+
+  async deleteSeason(id: string): Promise<void> {
+    await db.delete(seasons).where(eq(seasons.id, id));
   }
 
   // Team

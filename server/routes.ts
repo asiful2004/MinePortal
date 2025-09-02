@@ -269,6 +269,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/admin/seasons/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteSeason(id);
+      res.json({ message: 'Season deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting season:', error);
+      res.status(500).json({ message: 'Failed to delete season' });
+    }
+  });
+
   // Team management routes
   app.get('/api/admin/team', authenticateToken, async (req, res) => {
     try {
