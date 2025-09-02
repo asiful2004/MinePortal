@@ -155,6 +155,15 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(newsArticles.createdAt));
   }
 
+  async getNewsArticleById(id: string): Promise<NewsArticle | undefined> {
+    const [article] = await db
+      .select()
+      .from(newsArticles)
+      .where(and(eq(newsArticles.id, id), eq(newsArticles.isPublished, true)))
+      .limit(1);
+    return article;
+  }
+
   async createNewsArticle(article: InsertNewsArticle): Promise<NewsArticle> {
     const [created] = await db
       .insert(newsArticles)

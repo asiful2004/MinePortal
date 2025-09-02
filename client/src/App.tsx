@@ -8,6 +8,7 @@ import { useLanguage } from "./hooks/use-language";
 // Pages
 import Home from "@/pages/home";
 import News from "@/pages/news";
+import NewsDetail from "@/pages/news/[id]";
 import Vote from "@/pages/vote";
 import Season from "@/pages/season";
 import About from "@/pages/about";
@@ -29,6 +30,7 @@ function Router() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/news" component={News} />
+          <Route path="/news/:id" component={NewsDetail} />
           <Route path="/vote" component={Vote} />
           <Route path="/season" component={Season} />
           <Route path="/about" component={About} />

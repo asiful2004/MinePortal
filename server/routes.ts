@@ -78,6 +78,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/news/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const article = await storage.getNewsArticleById(id);
+      
+      if (!article) {
+        return res.status(404).json({ message: 'News article not found' });
+      }
+      
+      res.json(article);
+    } catch (error) {
+      console.error('Error fetching news article:', error);
+      res.status(500).json({ message: 'Failed to fetch news article' });
+    }
+  });
+
   // Seasons routes
   app.get('/api/seasons/current', async (req, res) => {
     try {
