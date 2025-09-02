@@ -59,9 +59,9 @@ export default function Home() {
             </p>
             
             {/* Unified Server Info Block */}
-            <Card className="glass-card max-w-4xl mx-auto mb-16 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300">
+            <Card className="glass-card max-w-2xl mx-auto mb-16 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300">
               <CardContent className="p-8">
-                <div className="grid md:grid-cols-3 gap-8 text-center">
+                <div className="space-y-8 text-center">
                   {/* Server IP Section */}
                   <div className="space-y-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/60 rounded-xl flex items-center justify-center mx-auto">
