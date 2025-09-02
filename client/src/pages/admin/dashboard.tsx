@@ -39,12 +39,12 @@ export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   const [user, setUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
-  
+
   // Dialog states for different sections
   const [showSeasonDialog, setShowSeasonDialog] = useState(false);
   const [showTeamDialog, setShowTeamDialog] = useState(false);
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
   const [showGalleryDialog, setShowGalleryDialog] = useState(false);
   const [showStoreDialog, setShowStoreDialog] = useState(false);
   const [showUserDialog, setShowUserDialog] = useState(false);
-  
+
   // Editing states for different sections
   const [editingSeason, setEditingSeason] = useState<any>(null);
   const [editingTeam, setEditingTeam] = useState<any>(null);
@@ -64,12 +64,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
     const userData = localStorage.getItem('admin_user');
-    
+
     if (!token || !userData) {
       setLocation('/admin/login');
       return;
     }
-    
+
     try {
       setUser(JSON.parse(userData));
     } catch (error) {
@@ -167,6 +167,17 @@ export default function AdminDashboard() {
     queryFn: async () => {
       const res = await fetch('/api/admin/users', { headers: getAuthHeaders() });
       if (!res.ok) throw new Error('Failed to fetch users');
+      return res.json();
+    },
+    enabled: !!user
+  });
+
+  // Backups Query
+  const { data: backups = [], isLoading: backupsLoading } = useQuery({
+    queryKey: ['/api/admin/backups'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/backups', { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch backups');
       return res.json();
     },
     enabled: !!user
@@ -334,7 +345,7 @@ export default function AdminDashboard() {
       const response = await fetch(`/api/admin/team/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify(data),
+        body: JSON.JSON.stringify(data),
       });
       if (!response.ok) throw new Error('Failed to update team member');
       return response.json();
@@ -626,6 +637,26 @@ export default function AdminDashboard() {
     }
   });
 
+  // Backup Mutation
+  const createBackupMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/admin/backups', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to create backup');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/backups'] });
+      toast({ title: 'Success', description: 'Database backup created successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center" data-testid="admin-loading">
@@ -651,7 +682,7 @@ export default function AdminDashboard() {
           </p>
         </CardContent>
       </Card>
-      
+
       <Card className="glass-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Active Seasons</CardTitle>
@@ -664,7 +695,7 @@ export default function AdminDashboard() {
           </p>
         </CardContent>
       </Card>
-      
+
       <Card className="glass-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Team Members</CardTitle>
@@ -677,7 +708,7 @@ export default function AdminDashboard() {
           </p>
         </CardContent>
       </Card>
-      
+
       <Card className="glass-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Gallery Images</CardTitle>
@@ -690,7 +721,7 @@ export default function AdminDashboard() {
           </p>
         </CardContent>
       </Card>
-      
+
       <Card className="glass-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Store Items</CardTitle>
@@ -703,7 +734,7 @@ export default function AdminDashboard() {
           </p>
         </CardContent>
       </Card>
-      
+
       <Card className="glass-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Registered Users</CardTitle>
@@ -716,7 +747,7 @@ export default function AdminDashboard() {
           </p>
         </CardContent>
       </Card>
-      
+
       <Card className="glass-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Server Status</CardTitle>
@@ -748,7 +779,7 @@ export default function AdminDashboard() {
           Create Season
         </Button>
       </div>
-      
+
       <div className="grid gap-4">
         {seasons.map((season) => (
           <Card key={season.id} className="glass-card">
@@ -806,7 +837,7 @@ export default function AdminDashboard() {
           Add Team Member
         </Button>
       </div>
-      
+
       <div className="grid gap-4">
         {team.map((member) => (
           <Card key={member.id} className="glass-card">
@@ -862,7 +893,7 @@ export default function AdminDashboard() {
           Add Voting Site
         </Button>
       </div>
-      
+
       <div className="grid gap-4">
         {votingSites.map((site) => (
           <Card key={site.id} className="glass-card">
@@ -918,7 +949,7 @@ export default function AdminDashboard() {
           Add Image
         </Button>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {gallery.map((image) => (
           <Card key={image.id} className="glass-card">
@@ -980,7 +1011,7 @@ export default function AdminDashboard() {
           Add Item
         </Button>
       </div>
-      
+
       <div className="grid gap-4">
         {store.map((item) => (
           <Card key={item.id} className="glass-card">
@@ -1043,7 +1074,7 @@ export default function AdminDashboard() {
           </DialogContent>
         </Dialog>
       </div>
-      
+
       {newsLoading ? (
         <div className="text-center py-8">Loading news articles...</div>
       ) : (
@@ -1107,6 +1138,59 @@ export default function AdminDashboard() {
     </div>
   );
 
+  // Backups Tab
+  const renderBackupsTab = () => (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Database Backups</h2>
+        <Button 
+          onClick={() => createBackupMutation.mutate()}
+          disabled={createBackupMutation.isPending}
+        >
+          {createBackupMutation.isPending ? 'Creating...' : 'Create New Backup'}
+        </Button>
+      </div>
+
+      {backupsLoading ? (
+        <div>Loading backups...</div>
+      ) : (
+        <div className="grid gap-4">
+          {backups && backups.length > 0 ? (
+            backups.map((backup: any) => (
+              <Card key={backup.name}>
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="font-semibold">{backup.name}</h3>
+                      <p className="text-sm text-gray-600">
+                        Created: {new Date(backup.created).toLocaleString()}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Size: {(backup.size / (1024 * 1024)).toFixed(2)} MB
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => window.open(backup.downloadUrl, '_blank')}
+                    >
+                      Download
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <p className="text-gray-500">No backups found. Create your first backup to get started.</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background" data-testid="admin-dashboard">
       <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -1128,14 +1212,15 @@ export default function AdminDashboard() {
 
       <div className="container py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
             <TabsTrigger value="news" data-testid="tab-news">News</TabsTrigger>
             <TabsTrigger value="seasons" data-testid="tab-seasons">Seasons</TabsTrigger>
             <TabsTrigger value="team" data-testid="tab-team">Team</TabsTrigger>
             <TabsTrigger value="voting" data-testid="tab-voting">Voting</TabsTrigger>
             <TabsTrigger value="gallery" data-testid="tab-gallery">Gallery</TabsTrigger>
-            <TabsTrigger value="store" data-testid="tab-store">Store</TabsTrigger>
+            <TabsTrigger value="store">Store Items</TabsTrigger>
+            <TabsTrigger value="backups">Backups</TabsTrigger>
             <TabsTrigger value="users" data-testid="tab-users">Users</TabsTrigger>
           </TabsList>
 
@@ -1165,6 +1250,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="store" className="space-y-6">
             {renderStoreTab()}
+          </TabsContent>
+
+          <TabsContent value="backups" className="space-y-6">
+            {renderBackupsTab()}
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">
@@ -1368,7 +1457,7 @@ function NewsCreateForm({ onSubmit }: { onSubmit: (data: any) => void }) {
           data-testid="news-title-input"
         />
       </div>
-      
+
       <div>
         <Label htmlFor="excerpt">Excerpt</Label>
         <Textarea
@@ -1379,7 +1468,7 @@ function NewsCreateForm({ onSubmit }: { onSubmit: (data: any) => void }) {
           data-testid="news-excerpt-input"
         />
       </div>
-      
+
       <div>
         <Label htmlFor="content">Content</Label>
         <Textarea
@@ -1391,7 +1480,7 @@ function NewsCreateForm({ onSubmit }: { onSubmit: (data: any) => void }) {
           data-testid="news-content-input"
         />
       </div>
-      
+
       <div>
         <Label htmlFor="category">Category</Label>
         <Select
@@ -1410,7 +1499,7 @@ function NewsCreateForm({ onSubmit }: { onSubmit: (data: any) => void }) {
           </SelectContent>
         </Select>
       </div>
-      
+
       <div>
         <Label htmlFor="imageUrl">Image URL (optional)</Label>
         <Input
@@ -1421,7 +1510,7 @@ function NewsCreateForm({ onSubmit }: { onSubmit: (data: any) => void }) {
           data-testid="news-image-input"
         />
       </div>
-      
+
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
           <Switch
@@ -1432,7 +1521,7 @@ function NewsCreateForm({ onSubmit }: { onSubmit: (data: any) => void }) {
           />
           <Label htmlFor="isPublished">Published</Label>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <Switch
             id="isFeatured"
@@ -1443,7 +1532,7 @@ function NewsCreateForm({ onSubmit }: { onSubmit: (data: any) => void }) {
           <Label htmlFor="isFeatured">Featured</Label>
         </div>
       </div>
-      
+
       <Button type="submit" className="btn-gaming" data-testid="save-news-button">
         <Save className="mr-2" size={16} />
         Create Article
@@ -1489,7 +1578,7 @@ function NewsEditForm({
           data-testid="edit-news-title-input"
         />
       </div>
-      
+
       <div>
         <Label htmlFor="edit-excerpt">Excerpt</Label>
         <Textarea
@@ -1500,7 +1589,7 @@ function NewsEditForm({
           data-testid="edit-news-excerpt-input"
         />
       </div>
-      
+
       <div>
         <Label htmlFor="edit-content">Content</Label>
         <Textarea
@@ -1512,7 +1601,7 @@ function NewsEditForm({
           data-testid="edit-news-content-input"
         />
       </div>
-      
+
       <div>
         <Label htmlFor="edit-category">Category</Label>
         <Select
@@ -1531,7 +1620,7 @@ function NewsEditForm({
           </SelectContent>
         </Select>
       </div>
-      
+
       <div>
         <Label htmlFor="edit-imageUrl">Image URL (optional)</Label>
         <Input
@@ -1542,7 +1631,7 @@ function NewsEditForm({
           data-testid="edit-news-image-input"
         />
       </div>
-      
+
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
           <Switch
@@ -1553,7 +1642,7 @@ function NewsEditForm({
           />
           <Label htmlFor="edit-isPublished">Published</Label>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <Switch
             id="edit-isFeatured"
@@ -1564,7 +1653,7 @@ function NewsEditForm({
           <Label htmlFor="edit-isFeatured">Featured</Label>
         </div>
       </div>
-      
+
       <div className="flex space-x-2">
         <Button type="submit" className="btn-gaming" data-testid="update-news-button">
           <Save className="mr-2" size={16} />
@@ -1990,7 +2079,7 @@ const renderUsersTab = () => (
         Add User
       </Button>
     </div>
-    
+
     <div className="grid gap-4">
       {users.map((user) => (
         <Card key={user.id} className="glass-card">
@@ -2067,13 +2156,13 @@ const UserForm = ({ initialData, onSubmit }: { initialData?: any, onSubmit: (dat
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Don't send password if empty on edit
     const submitData = { ...formData };
     if (initialData && !submitData.password) {
       delete submitData.password;
     }
-    
+
     onSubmit(submitData);
   };
 
