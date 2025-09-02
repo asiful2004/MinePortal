@@ -148,7 +148,7 @@ export const insertNewsArticleSchema = createInsertSchema(newsArticles).omit({
   createdAt: true,
   updatedAt: true,
 }).extend({
-  publishedAt: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined),
+  publishedAt: z.string().datetime().nullable().optional().transform((val) => val ? new Date(val) : undefined),
 });
 
 export const insertSeasonSchema = createInsertSchema(seasons).omit({
@@ -156,7 +156,7 @@ export const insertSeasonSchema = createInsertSchema(seasons).omit({
   createdAt: true,
 }).extend({
   startDate: z.string().datetime().transform((val) => new Date(val)),
-  endDate: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined),
+  endDate: z.string().datetime().nullable().optional().transform((val) => val ? new Date(val) : undefined),
 });
 
 export const insertTeamMemberSchema = createInsertSchema(teamMembers).omit({
