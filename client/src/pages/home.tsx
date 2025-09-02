@@ -70,8 +70,8 @@ export default function Home() {
                       </svg>
                     </div>
                     <h3 className="font-gaming font-semibold text-primary">{t('server.ip.label')}</h3>
-                    <div className="font-mono text-lg font-semibold text-foreground bg-muted/50 rounded-lg p-3 border">
-                      {serverConfig?.ip || 'play.skyblocklegends.net'}
+                    <div className="bg-muted/50 rounded-lg p-3 border">
+                      <IpCopy />
                     </div>
                   </div>
                   
@@ -97,7 +97,7 @@ export default function Home() {
                       <div className="w-6 h-6 bg-green-400 rounded-full animate-pulse"></div>
                     </div>
                     <h3 className="font-gaming font-semibold text-primary">{t('server.status.label')}</h3>
-                    <div className="space-y-1">
+                    <div className="space-y-1 flex flex-col items-center">
                       <ServerStatus />
                       <p className="text-sm text-muted-foreground">Uptime: 99.9%</p>
                     </div>
@@ -129,6 +129,149 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Recent News Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="font-gaming text-3xl md:text-4xl font-bold text-primary mb-4">
+              {t('news.title')}
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              {t('news.subtitle')}
+            </p>
+          </div>
+          
+          {recentNews && recentNews.length > 0 ? (
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-8">
+              {recentNews.map((article) => (
+                <NewsCard key={article.id} article={article} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12" data-testid="news-empty">
+              <p className="text-muted-foreground">{t('news.empty')}</p>
+            </div>
+          )}
+
+          <div className="text-center">
+            <Link href="/news">
+              <Button variant="outline" data-testid="view-all-news">
+                {t('news.viewall')}
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Current Season Section */}
+      {currentSeason && (
+        <section className="py-16 bg-gradient-to-r from-muted/20 to-transparent">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                  <h2 className="font-gaming text-3xl md:text-4xl font-bold text-primary mb-6">
+                    {currentSeason.name}
+                  </h2>
+                  <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
+                    {currentSeason.description}
+                  </p>
+                  
+                  {currentSeason.features && Array.isArray(currentSeason.features) && (
+                    <div className="space-y-4 mb-8">
+                      {currentSeason.features.slice(0, 4).map((feature, index) => (
+                        <div key={index} className="flex items-center space-x-3">
+                          <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                          <span>{typeof feature === 'string' ? feature : JSON.stringify(feature)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  <Link href="/season">
+                    <Button className="btn-gaming" data-testid="explore-season">
+                      {t('season.explore')}
+                    </Button>
+                  </Link>
+                </div>
+                
+                <div>
+                  {currentSeason.videoUrl ? (
+                    <div className="relative rounded-xl overflow-hidden shadow-2xl aspect-video">
+                      <iframe
+                        src={currentSeason.videoUrl}
+                        className="w-full h-full"
+                        frameBorder="0"
+                        allowFullScreen
+                        data-testid="season-video"
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative rounded-xl overflow-hidden shadow-2xl">
+                      <div className="aspect-video bg-muted flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Play className="w-8 h-8 text-primary-foreground" />
+                          </div>
+                          <p className="text-foreground font-semibold">{t('season.video.placeholder')}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Gallery Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="font-gaming text-3xl md:text-4xl font-bold text-primary mb-4">
+              {t('gallery.title')}
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              {t('gallery.subtitle')}
+            </p>
+          </div>
+          
+          <div className="max-w-6xl mx-auto">
+            <GalleryGrid />
+          </div>
+        </div>
+      </section>
+
+      {/* Team Preview Section */}
+      {teamMembers && teamMembers.length > 0 && (
+        <section className="py-16 bg-gradient-to-r from-muted/20 to-transparent">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-4xl mx-auto">
+              <h2 className="font-gaming text-3xl md:text-4xl font-bold text-primary mb-6">
+                {t('team.title')}
+              </h2>
+              <p className="text-muted-foreground text-lg mb-12">
+                {t('team.subtitle')}
+              </p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                {teamMembers.slice(0, 4).map((member) => (
+                  <TeamCard key={member.id} member={member} size="small" />
+                ))}
+              </div>
+              
+              <Link href="/about">
+                <Button className="btn-gaming" data-testid="meet-full-team">
+                  <Users className="mr-2" size={20} />
+                  {t('team.meetfull')}
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
