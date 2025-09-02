@@ -1448,9 +1448,13 @@ function SeasonForm({ onSubmit, initialData }: { onSubmit: (data: any) => void; 
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     description: initialData?.description || '',
-    startDate: initialData?.startDate || '',
-    endDate: initialData?.endDate || '',
+    version: initialData?.version || '',
+    startDate: initialData?.startDate ? new Date(initialData.startDate).toISOString().split('T')[0] : '',
+    endDate: initialData?.endDate ? new Date(initialData.endDate).toISOString().split('T')[0] : '',
     isActive: initialData?.isActive || false,
+    features: initialData?.features || [],
+    videoUrl: initialData?.videoUrl || '',
+    imageUrl: initialData?.imageUrl || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -1479,6 +1483,16 @@ function SeasonForm({ onSubmit, initialData }: { onSubmit: (data: any) => void; 
         />
       </div>
       <div>
+        <Label htmlFor="season-version">Version (e.g., S1, S2, S3)</Label>
+        <Input
+          id="season-version"
+          value={formData.version}
+          onChange={(e) => setFormData(prev => ({ ...prev, version: e.target.value }))}
+          placeholder="S1"
+          required
+        />
+      </div>
+      <div>
         <Label htmlFor="season-start">Start Date</Label>
         <Input
           id="season-start"
@@ -1494,6 +1508,26 @@ function SeasonForm({ onSubmit, initialData }: { onSubmit: (data: any) => void; 
           type="date"
           value={formData.endDate}
           onChange={(e) => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
+        />
+      </div>
+      <div>
+        <Label htmlFor="season-video">Video URL (YouTube)</Label>
+        <Input
+          id="season-video"
+          type="url"
+          value={formData.videoUrl}
+          onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
+          placeholder="https://youtube.com/..."
+        />
+      </div>
+      <div>
+        <Label htmlFor="season-image">Image URL</Label>
+        <Input
+          id="season-image"
+          type="url"
+          value={formData.imageUrl}
+          onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
+          placeholder="https://..."
         />
       </div>
       <div className="flex items-center space-x-2">

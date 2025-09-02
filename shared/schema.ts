@@ -155,8 +155,16 @@ export const insertSeasonSchema = createInsertSchema(seasons).omit({
   id: true,
   createdAt: true,
 }).extend({
-  startDate: z.string().datetime().transform((val) => new Date(val)),
-  endDate: z.union([z.string().datetime(), z.null()]).optional().transform((val) => val ? new Date(val) : undefined),
+  startDate: z.string().min(1).transform((val) => {
+    // Handle both date strings and datetime strings
+    const date = new Date(val);
+    return isNaN(date.getTime()) ? new Date() : date;
+  }),
+  endDate: z.union([z.string(), z.null()]).optional().transform((val) => {
+    if (!val) return undefined;
+    const date = new Date(val);
+    return isNaN(date.getTime()) ? undefined : date;
+  }),
 });
 
 export const insertTeamMemberSchema = createInsertSchema(teamMembers).omit({
