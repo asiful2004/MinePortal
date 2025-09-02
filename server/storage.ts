@@ -7,6 +7,7 @@ import {
   votingSites,
   galleryImages,
   storeItems,
+  orders,
   type User,
   type InsertUser,
   type ServerConfig,
@@ -23,6 +24,8 @@ import {
   type InsertGalleryImage,
   type StoreItem,
   type InsertStoreItem,
+  type Order,
+  type InsertOrder,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -77,6 +80,15 @@ export interface IStorage {
   createStoreItem(item: InsertStoreItem): Promise<StoreItem>;
   updateStoreItem(id: string, item: Partial<InsertStoreItem>): Promise<StoreItem>;
   deleteStoreItem(id: string): Promise<void>;
+
+  // Orders
+  getAllOrders(): Promise<Order[]>;
+  getOrderById(id: string): Promise<Order | undefined>;
+  getOrdersByCustomer(customerId: string): Promise<Order[]>;
+  createOrder(order: InsertOrder): Promise<Order>;
+  updateOrder(id: string, order: Partial<InsertOrder>): Promise<Order>;
+  deleteOrder(id: string): Promise<void>;
+  generateOrderNumber(): Promise<string>;
 
   // User Management
   getAllUsers(): Promise<User[]>;
@@ -359,6 +371,51 @@ export class DatabaseStorage implements IStorage {
   async deleteStoreItem(id: string): Promise<void> {
     const result = await db.delete(storeItems).where(eq(storeItems.id, id));
     console.log(`Deleted ${result.rowCount || 0} store item(s) with ID: ${id}`);
+  }
+
+  // Orders
+  async getAllOrders(): Promise<Order[]> {
+    return await db.select().from(orders).orderBy(desc(orders.createdAt));
+  }
+
+  async getOrderById(id: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    return order;
+  }
+
+  async getOrdersByCustomer(customerId: string): Promise<Order[]> {
+    return await db.select().from(orders).where(eq(orders.customerId, customerId)).orderBy(desc(orders.createdAt));
+  }
+
+  async createOrder(orderData: InsertOrder): Promise<Order> {
+    const orderNumber = await this.generateOrderNumber();
+    const [order] = await db
+      .insert(orders)
+      .values({
+        ...orderData,
+        orderNumber,
+      })
+      .returning();
+    return order;
+  }
+
+  async updateOrder(id: string, orderData: Partial<InsertOrder>): Promise<Order> {
+    const [order] = await db
+      .update(orders)
+      .set({ ...orderData, updatedAt: new Date() })
+      .where(eq(orders.id, id))
+      .returning();
+    return order;
+  }
+
+  async deleteOrder(id: string): Promise<void> {
+    await db.delete(orders).where(eq(orders.id, id));
+  }
+
+  async generateOrderNumber(): Promise<string> {
+    const count = await db.select().from(orders);
+    const orderCount = count.length + 1;
+    return `ORD-${orderCount.toString().padStart(3, '0')}`;
   }
 
   // User Management

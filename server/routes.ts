@@ -2,7 +2,7 @@ import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import jwt from "jsonwebtoken";
-import { insertNewsArticleSchema, insertSeasonSchema, insertTeamMemberSchema, insertVotingSiteSchema, insertGalleryImageSchema, insertStoreItemSchema, insertUserSchema } from "@shared/schema";
+import { insertNewsArticleSchema, insertSeasonSchema, insertTeamMemberSchema, insertVotingSiteSchema, insertGalleryImageSchema, insertStoreItemSchema, insertUserSchema, insertOrderSchema } from "@shared/schema";
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -588,6 +588,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error deleting user:', error);
       res.status(500).json({ message: 'Failed to delete user' });
+    }
+  });
+
+  // Orders Management Routes
+  app.get('/api/admin/orders', authenticateToken, async (req, res) => {
+    try {
+      const orders = await storage.getAllOrders();
+      res.json(orders);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      res.status(500).json({ message: 'Failed to fetch orders' });
+    }
+  });
+
+  app.get('/api/admin/orders/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const order = await storage.getOrderById(id);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+      res.json(order);
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      res.status(500).json({ message: 'Failed to fetch order' });
+    }
+  });
+
+  app.post('/api/admin/orders', authenticateToken, async (req, res) => {
+    try {
+      const validatedData = insertOrderSchema.parse(req.body);
+      const order = await storage.createOrder(validatedData);
+      res.json(order);
+    } catch (error) {
+      console.error('Error creating order:', error);
+      res.status(500).json({ message: 'Failed to create order' });
+    }
+  });
+
+  app.put('/api/admin/orders/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = insertOrderSchema.partial().parse(req.body);
+      const order = await storage.updateOrder(id, validatedData);
+      res.json(order);
+    } catch (error) {
+      console.error('Error updating order:', error);
+      res.status(500).json({ message: 'Failed to update order' });
+    }
+  });
+
+  app.delete('/api/admin/orders/:id', authenticateToken, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteOrder(id);
+      res.json({ message: 'Order deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      res.status(500).json({ message: 'Failed to delete order' });
+    }
+  });
+
+  app.get('/api/admin/orders/customer/:customerId', authenticateToken, async (req, res) => {
+    try {
+      const { customerId } = req.params;
+      const orders = await storage.getOrdersByCustomer(customerId);
+      res.json(orders);
+    } catch (error) {
+      console.error('Error fetching customer orders:', error);
+      res.status(500).json({ message: 'Failed to fetch customer orders' });
     }
   });
 

@@ -18,7 +18,8 @@ import {
   X,
   Server,
   Eye,
-  EyeOff
+  EyeOff,
+  ShoppingCart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -32,7 +33,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import type { NewsArticle, Season, TeamMember, VotingSite, GalleryImage, StoreItem, ServerConfig, User } from '@shared/schema';
+import type { NewsArticle, Season, TeamMember, VotingSite, GalleryImage, StoreItem, ServerConfig, User, Order } from '@shared/schema';
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
@@ -52,6 +53,7 @@ export default function AdminDashboard() {
   const [showGalleryDialog, setShowGalleryDialog] = useState(false);
   const [showStoreDialog, setShowStoreDialog] = useState(false);
   const [showUserDialog, setShowUserDialog] = useState(false);
+  const [showOrderDialog, setShowOrderDialog] = useState(false);
 
   // Editing states for different sections
   const [editingSeason, setEditingSeason] = useState<any>(null);
@@ -60,6 +62,7 @@ export default function AdminDashboard() {
   const [editingGallery, setEditingGallery] = useState<any>(null);
   const [editingStore, setEditingStore] = useState<any>(null);
   const [editingUser, setEditingUser] = useState<any>(null);
+  const [editingOrder, setEditingOrder] = useState<any>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -167,6 +170,16 @@ export default function AdminDashboard() {
     queryFn: async () => {
       const res = await fetch('/api/admin/users', { headers: getAuthHeaders() });
       if (!res.ok) throw new Error('Failed to fetch users');
+      return res.json();
+    },
+    enabled: !!user
+  });
+
+  const { data: orders = [] } = useQuery<Order[]>({
+    queryKey: ['/api/admin/orders'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/orders', { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch orders');
       return res.json();
     },
     enabled: !!user
@@ -637,6 +650,65 @@ export default function AdminDashboard() {
     }
   });
 
+  // Order mutations
+  const createOrderMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/admin/orders', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to create order');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
+      setShowOrderDialog(false);
+      toast({ title: 'Success', description: 'Order created successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const updateOrderMutation = useMutation({
+    mutationFn: async ({ id, ...data }: any) => {
+      const response = await fetch(`/api/admin/orders/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to update order');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
+      setEditingOrder(null);
+      toast({ title: 'Success', description: 'Order updated successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const deleteOrderMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/admin/orders/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to delete order');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
+      toast({ title: 'Success', description: 'Order deleted successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
   // User Form Component
   const UserForm = ({ initialData, onSubmit }: { initialData?: any, onSubmit: (data: any) => void }) => {
     const [formData, setFormData] = useState({
@@ -729,7 +801,217 @@ export default function AdminDashboard() {
     );
   };
 
+  // Order Form Component
+  const OrderForm = ({ initialData, onSubmit }: { initialData?: any, onSubmit: (data: any) => void }) => {
+    const [formData, setFormData] = useState({
+      customerEmail: initialData?.customerEmail || '',
+      customerName: initialData?.customerName || '',
+      customerId: initialData?.customerId || null,
+      items: initialData?.items ? JSON.stringify(JSON.parse(initialData.items), null, 2) : '[]',
+      totalAmount: initialData?.totalAmount || '0.00',
+      status: initialData?.status || 'pending',
+      paymentMethod: initialData?.paymentMethod || 'paypal',
+      paymentStatus: initialData?.paymentStatus || 'pending',
+      notes: initialData?.notes || '',
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      
+      try {
+        // Validate items JSON
+        JSON.parse(formData.items);
+        onSubmit(formData);
+      } catch (error) {
+        alert('Invalid JSON format in items field');
+      }
+    };
+
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="order-customer-name">Customer Name</Label>
+          <Input
+            id="order-customer-name"
+            value={formData.customerName}
+            onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="order-customer-email">Customer Email</Label>
+          <Input
+            id="order-customer-email"
+            type="email"
+            value={formData.customerEmail}
+            onChange={(e) => setFormData(prev => ({ ...prev, customerEmail: e.target.value }))}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="order-items">Items (JSON Format)</Label>
+          <Textarea
+            id="order-items"
+            value={formData.items}
+            onChange={(e) => setFormData(prev => ({ ...prev, items: e.target.value }))}
+            placeholder='[{"name": "Item Name", "quantity": 1, "price": 10.00}]'
+            rows={4}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="order-total">Total Amount</Label>
+          <Input
+            id="order-total"
+            type="number"
+            step="0.01"
+            value={formData.totalAmount}
+            onChange={(e) => setFormData(prev => ({ ...prev, totalAmount: e.target.value }))}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="order-status">Status</Label>
+          <Select value={formData.status} onValueChange={(value) => setFormData(prev => ({ ...prev, status: value }))}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="processing">Processing</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+              <SelectItem value="refunded">Refunded</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="order-payment-method">Payment Method</Label>
+          <Select value={formData.paymentMethod} onValueChange={(value) => setFormData(prev => ({ ...prev, paymentMethod: value }))}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select payment method" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="paypal">PayPal</SelectItem>
+              <SelectItem value="stripe">Stripe</SelectItem>
+              <SelectItem value="crypto">Cryptocurrency</SelectItem>
+              <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="order-payment-status">Payment Status</Label>
+          <Select value={formData.paymentStatus} onValueChange={(value) => setFormData(prev => ({ ...prev, paymentStatus: value }))}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select payment status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+              <SelectItem value="failed">Failed</SelectItem>
+              <SelectItem value="refunded">Refunded</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="order-notes">Notes</Label>
+          <Textarea
+            id="order-notes"
+            value={formData.notes}
+            onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+            placeholder="Additional notes about the order"
+            rows={3}
+          />
+        </div>
+        <Button type="submit" className="w-full">
+          {initialData ? 'Update Order' : 'Create Order'}
+        </Button>
+      </form>
+    );
+  };
+
   // Users Management
+  const renderOrdersTab = () => (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Order Management</h3>
+        <Button 
+          onClick={() => {
+            setEditingOrder(null);
+            setShowOrderDialog(true);
+          }}
+          data-testid="button-add-order"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Create Order
+        </Button>
+      </div>
+
+      <div className="grid gap-4">
+        {orders.map((order: Order) => (
+          <Card key={order.id}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <ShoppingCart className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-primary">{order.orderNumber}</h4>
+                    <p className="text-sm text-muted-foreground">{order.customerName} - {order.customerEmail}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant={order.status === 'completed' ? 'default' : order.status === 'pending' ? 'secondary' : 'destructive'}>
+                        {order.status}
+                      </Badge>
+                      <Badge variant="outline">
+                        ${parseFloat(order.totalAmount).toFixed(2)}
+                      </Badge>
+                      <Badge variant="outline">
+                        {(() => {
+                          try {
+                            const items = JSON.parse(order.items as string);
+                            return Array.isArray(items) ? `${items.length} item(s)` : 'Order items';
+                          } catch {
+                            return 'Order items';
+                          }
+                        })()}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setEditingOrder(order);
+                      setShowOrderDialog(true);
+                    }}
+                    data-testid={`button-edit-order-${order.id}`}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => {
+                      if (confirm('Are you sure you want to delete this order?')) {
+                        deleteOrderMutation.mutate(order.id);
+                      }
+                    }}
+                    data-testid={`button-delete-order-${order.id}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
   const renderUsersTab = () => (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -1396,7 +1678,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9">
+          <TabsList className="grid w-full grid-cols-10">
             <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
             <TabsTrigger value="news" data-testid="tab-news">News</TabsTrigger>
             <TabsTrigger value="seasons" data-testid="tab-seasons">Seasons</TabsTrigger>
@@ -1404,6 +1686,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="voting" data-testid="tab-voting">Voting</TabsTrigger>
             <TabsTrigger value="gallery" data-testid="tab-gallery">Gallery</TabsTrigger>
             <TabsTrigger value="store">Store Items</TabsTrigger>
+            <TabsTrigger value="orders" data-testid="tab-orders">Orders</TabsTrigger>
             <TabsTrigger value="backups">Backups</TabsTrigger>
             <TabsTrigger value="users" data-testid="tab-users">Users</TabsTrigger>
           </TabsList>
@@ -1438,6 +1721,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="backups" className="space-y-6">
             {renderBackupsTab()}
+          </TabsContent>
+
+          <TabsContent value="orders" className="space-y-6">
+            {renderOrdersTab()}
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">
@@ -1595,6 +1882,28 @@ export default function AdminDashboard() {
               }
               setShowUserDialog(false);
               setEditingUser(null);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Order Dialog */}
+      <Dialog open={showOrderDialog} onOpenChange={setShowOrderDialog}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingOrder ? 'Edit Order' : 'Create Order'}</DialogTitle>
+            <DialogDescription>
+              {editingOrder ? 'Update order information' : 'Create a new order.'}
+            </DialogDescription>
+          </DialogHeader>
+          <OrderForm 
+            initialData={editingOrder}
+            onSubmit={(data) => {
+              if (editingOrder) {
+                updateOrderMutation.mutate({ id: editingOrder.id, ...data });
+              } else {
+                createOrderMutation.mutate(data);
+              }
             }}
           />
         </DialogContent>

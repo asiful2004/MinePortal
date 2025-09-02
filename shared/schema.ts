@@ -122,6 +122,24 @@ export const storeItems = pgTable("store_items", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Orders
+export const orders = pgTable("orders", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  orderNumber: text("order_number").notNull().unique(), // ORD-001, ORD-002, etc.
+  customerId: varchar("customer_id").references(() => users.id),
+  customerEmail: text("customer_email").notNull(),
+  customerName: text("customer_name").notNull(),
+  items: jsonb("items").notNull().default([]), // array of {id, name, price, quantity}
+  totalAmount: text("total_amount").notNull(), // $99.99
+  status: text("status").notNull().default("pending"), // pending, processing, completed, cancelled, refunded
+  paymentMethod: text("payment_method").default("Credit Card"),
+  paymentStatus: text("payment_status").notNull().default("pending"), // pending, paid, failed, refunded
+  deliveryDate: timestamp("delivery_date"),
+  notes: text("notes"), // admin notes
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const newsArticlesRelations = relations(newsArticles, ({ one }) => ({
   author: one(users, {
@@ -130,8 +148,16 @@ export const newsArticlesRelations = relations(newsArticles, ({ one }) => ({
   }),
 }));
 
+export const ordersRelations = relations(orders, ({ one }) => ({
+  customer: one(users, {
+    fields: [orders.customerId],
+    references: [users.id],
+  }),
+}));
+
 export const usersRelations = relations(users, ({ many }) => ({
   newsArticles: many(newsArticles),
+  orders: many(orders),
 }));
 
 // Insert schemas
@@ -190,6 +216,14 @@ export const insertStoreItemSchema = createInsertSchema(storeItems).omit({
   createdAt: true,
 });
 
+export const insertOrderSchema = createInsertSchema(orders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  deliveryDate: z.union([z.string().datetime(), z.null()]).optional().transform((val) => val ? new Date(val) : undefined),
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -214,3 +248,6 @@ export type InsertGalleryImage = z.infer<typeof insertGalleryImageSchema>;
 
 export type StoreItem = typeof storeItems.$inferSelect;
 export type InsertStoreItem = z.infer<typeof insertStoreItemSchema>;
+
+export type Order = typeof orders.$inferSelect;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
