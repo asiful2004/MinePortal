@@ -131,7 +131,7 @@ export default function Home() {
       </section>
 
       {/* Recent News Section */}
-      <section className="py-16">
+      <section className="py-16 bg-gradient-to-b from-background via-muted/5 to-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="font-gaming text-3xl md:text-4xl font-bold text-primary mb-4">
@@ -166,7 +166,7 @@ export default function Home() {
 
       {/* Current Season Section */}
       {currentSeason && (
-        <section className="py-16 bg-gradient-to-r from-muted/20 to-transparent">
+        <section className="py-16 bg-gradient-to-r from-muted/10 via-background to-muted/10">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -183,7 +183,7 @@ export default function Home() {
                       {currentSeason.features.slice(0, 4).map((feature, index) => (
                         <div key={index} className="flex items-center space-x-3">
                           <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                          <span>{typeof feature === 'string' ? feature : JSON.stringify(feature)}</span>
+                          <span>{String(feature)}</span>
                         </div>
                       ))}
                     </div>
@@ -227,7 +227,7 @@ export default function Home() {
       )}
 
       {/* Gallery Section */}
-      <section className="py-16">
+      <section className="py-16 bg-gradient-to-b from-background via-primary/5 to-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="font-gaming text-3xl md:text-4xl font-bold text-primary mb-4">
@@ -246,7 +246,7 @@ export default function Home() {
 
       {/* Team Preview Section */}
       {teamMembers && teamMembers.length > 0 && (
-        <section className="py-16 bg-gradient-to-r from-muted/20 to-transparent">
+        <section className="py-16 bg-gradient-to-r from-accent/5 via-background to-secondary/5">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-4xl mx-auto">
               <h2 className="font-gaming text-3xl md:text-4xl font-bold text-primary mb-6">
