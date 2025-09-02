@@ -1766,7 +1766,7 @@ function StoreForm({ onSubmit, initialData }: { onSubmit: (data: any) => void; i
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     description: initialData?.description || '',
-    price: initialData?.price || '',
+    price: initialData?.price ? initialData.price.replace('$', '') : '',
     category: initialData?.category || 'ranks',
     imageUrl: initialData?.imageUrl || '',
     isActive: initialData?.isActive !== undefined ? initialData.isActive : true,
@@ -1777,7 +1777,8 @@ function StoreForm({ onSubmit, initialData }: { onSubmit: (data: any) => void; i
     e.preventDefault();
     onSubmit({
       ...formData,
-      price: parseFloat(formData.price),
+      price: `$${formData.price}`,
+      features: [],
     });
   };
 
