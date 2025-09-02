@@ -1,0 +1,235 @@
+{
+  "nav": {
+    "home": "Ana Sayfa",
+    "news": "Haberler",
+    "vote": "Oy Ver",
+    "season": "Sezon",
+    "about": "Hakkımızda",
+    "store": "Mağaza"
+  },
+  "server": {
+    "name": "SkyBlock Legends",
+    "tagline": "Premium Minecraft Sunucusu",
+    "description": "Özel adalar, epik görevler ve efsanevi ödüllerle nihai SkyBlock macerasını yaşayın. En gelişmiş Minecraft sunucusunda binlerce oyuncuyla birlikte olun.",
+    "ip": {
+      "label": "Sunucu IP",
+      "copy": "Kopyala",
+      "copied": "Kopyalandı!",
+      "copied_desc": "Sunucu IP panoya kopyalandı"
+    },
+    "players": {
+      "label": "Çevrimiçi Oyuncular"
+    },
+    "status": {
+      "label": "Sunucu Durumu",
+      "online": "Çevrimiçi",
+      "offline": "Çevrimdışı",
+      "loading": "Yükleniyor..."
+    }
+  },
+  "cta": {
+    "join": "Şimdi Sunucuya Katıl",
+    "discord": "Discord'a Katıl"
+  },
+  "news": {
+    "title": "Son Haberler",
+    "subtitle": "En son sunucu geliştirmeleri ve etkinliklerle güncel kalın",
+    "page_subtitle": "SkyBlock Legends'ten en son gelişmeler, etkinlikler ve topluluk öne çıkanları hakkında bilgi edinin",
+    "readmore": "Daha Fazla Oku",
+    "viewall": "Tüm Haberleri Gör",
+    "empty": "Haber makalesi mevcut değil",
+    "featured": "Öne Çıkan",
+    "category": {
+      "update": "Güncelleme",
+      "event": "Etkinlik",
+      "community": "Topluluk",
+      "tournament": "Turnuva",
+      "maintenance": "Bakım"
+    }
+  },
+  "season": {
+    "title": "Sunucu Sezonları",
+    "subtitle": "Epik sezonluk güncellemelerimiz aracılığıyla SkyBlock Legends'in evrimini deneyimleyin",
+    "current": {
+      "label": "Mevcut Sezon"
+    },
+    "active": "Aktif",
+    "explore": "Sezonu Keşfet",
+    "start_playing": "Oynamaya Başla",
+    "guide": "Sezon Rehberi",
+    "history": "Sezon Geçmişi",
+    "empty": "Sezon mevcut değil",
+    "video": {
+      "placeholder": "Sezon Fragmanı"
+    }
+  },
+  "gallery": {
+    "title": "Epik Anlar Galerisi",
+    "subtitle": "Topluluğumuzun en inanılmaz başarılarına ve yapılarına tanık olun",
+    "empty": "Galeri resmi mevcut değil"
+  },
+  "team": {
+    "title": "Efsanevi Ekibimizle Tanışın",
+    "subtitle": "SkyBlock Legends'i mümkün kılan tutkulu geliştiriciler, yöneticiler ve topluluk liderleri",
+    "meetfull": "Tüm Ekiple Tanışın",
+    "empty": "Ekip üyesi mevcut değil",
+    "roles": {
+      "founder": "Kurucu",
+      "admin": "Yönetici",
+      "moderator": "Moderatör",
+      "developer": "Geliştirici",
+      "builder": "Yapıcı",
+      "supporter": "Destekçi"
+    }
+  },
+  "vote": {
+    "title": "SkyBlock Legends için Oy Verin",
+    "subtitle": "Bu Minecraft sunucu listelerinde oy vererek sunucumuzu destekleyin ve harika ödüller kazanın",
+    "benefits": {
+      "title": "Oy Verme Faydaları",
+      "diamonds": "Oy başına 500 Elmas",
+      "diamonds.desc": "Anında hesabınıza eklenir",
+      "exp": "1 saat boyunca Çift XP",
+      "exp.desc": "Bonus deneyimle daha hızlı seviye atlayın",
+      "crate": "Oy Sandığı Anahtarı",
+      "crate.desc": "Özel eşyalar ve ödüllerin kilidini açın"
+    },
+    "sites": {
+      "title": "Bu Sitelerde Oy Verin",
+      "empty": "Oy verme sitesi mevcut değil"
+    },
+    "tutorial": {
+      "title": "Nasıl Oy Verilir Rehberi",
+      "watch": "Rehberi İzle"
+    },
+    "site": {
+      "reward": "+500 Elmas"
+    }
+  },
+  "store": {
+    "title": "SkyBlock Mağazası",
+    "subtitle": "Özel rütbeler, eşyalar ve kozmetiklerle sunucuyu destekleyin ve oyun deneyiminizi geliştirin",
+    "ranks": {
+      "title": "VIP Rütbeler",
+      "empty": "Rütbe mevcut değil"
+    },
+    "items": {
+      "title": "Eşyalar ve Kozmetikler"
+    },
+    "popular": "POPÜLER",
+    "onetime": "Tek seferlik satın alma",
+    "purchase": "Satın Al",
+    "buy_now": "Şimdi Satın Al",
+    "notice": {
+      "title": "Önemli Duyuru",
+      "description": "Tüm satın almalar sunucu geliştirme ve bakımını destekler. Başarılı ödeme sonrası eşyalar anında teslim edilir. Destek için Discord'da ekibimizle iletişime geçin."
+    }
+  },
+  "about": {
+    "tagline": "2023'ten beri Premium Minecraft SkyBlock Deneyimi",
+    "story": {
+      "title": "Hikayemiz",
+      "part1": "SkyBlock Legends, nihai Minecraft SkyBlock deneyimi yaratma tutkusuyla doğdu. 2023 yılında kendini adamış geliştiriciler ve Minecraft meraklıları ekibi tarafından kurulan sunucumuz, yenilikçi özellikler, özel mekanikler ve inanılmaz topluluk odaklı deneyimle geleneksel SkyBlock oynanışında devrim yaratmaya karar verdi.",
+      "part2": "Arkadaşlar için küçük bir sunucu olarak başlayan şey, dünyanın en gelişmiş SkyBlock sunucularından birine dönüştü ve epik maceralara çıkan, inanılmaz adalar inşa eden ve kalıcı dostluklar kuran binlerce oyuncuya ev sahipliği yapıyor. Kalite, adalet ve yeniliğe olan bağlılığımız yaptığımız her şeyi yönlendiriyor."
+    }
+  },
+  "footer": {
+    "description": "Özel eklentiler ve harika toplulukla nihai Minecraft hayatta kalma deneyimi.",
+    "links": {
+      "title": "Hızlı Bağlantılar"
+    },
+    "server": {
+      "title": "Sunucu Bilgileri",
+      "ip": "IP",
+      "version": "Sürüm",
+      "players": "Oyuncular"
+    },
+    "contact": {
+      "title": "İletişim",
+      "support": "Destek",
+      "discord": "Discord",
+      "email": "E-posta"
+    },
+    "copyright": "© 2024 SkyBlock Legends. Tüm hakları saklıdır.",
+    "legal": {
+      "privacy": "Gizlilik Politikası",
+      "terms": "Hizmet Şartları"
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Yönetici Paneli",
+      "subtitle": "Sunucu içeriğini yönetmek için giriş yapın",
+      "username": "Kullanıcı Adı",
+      "password": "Şifre",
+      "username_placeholder": "Kullanıcı adınızı girin",
+      "password_placeholder": "Şifrenizi girin",
+      "login": "Giriş Yap",
+      "logging_in": "Giriş yapılıyor...",
+      "success": "Giriş başarılı",
+      "welcome": "Yönetici paneline hoş geldiniz",
+      "error": "Giriş başarısız",
+      "invalid_credentials": "Geçersiz kullanıcı adı veya şifre",
+      "default_credentials": "Geliştirme için varsayılan kimlik bilgileri:"
+    },
+    "dashboard": {
+      "title": "Yönetici Paneli",
+      "welcome": "Hoş geldin, {{name}}"
+    },
+    "logout": "Çıkış Yap",
+    "loading": "Yönetici paneli yükleniyor...",
+    "tabs": {
+      "news": "Haberler",
+      "seasons": "Sezonlar",
+      "team": "Ekip",
+      "voting": "Oy Verme",
+      "gallery": "Galeri",
+      "store": "Mağaza"
+    },
+    "news": {
+      "title": "Haber Yönetimi",
+      "create": "Makale Oluştur",
+      "created": "Haber makalesi başarıyla oluşturuldu",
+      "updated": "Haber makalesi başarıyla güncellendi",
+      "deleted": "Haber makalesi başarıyla silindi",
+      "form": {
+        "title": "Başlık",
+        "excerpt": "Özet",
+        "content": "İçerik",
+        "category": "Kategori",
+        "image_url": "Resim URL",
+        "published": "Yayınlandı",
+        "featured": "Öne Çıkan"
+      }
+    },
+    "seasons": {
+      "title": "Sezon Yönetimi",
+      "create": "Sezon Oluştur"
+    },
+    "team": {
+      "title": "Ekip Yönetimi",
+      "create": "Ekip Üyesi Ekle"
+    },
+    "voting": {
+      "title": "Oy Verme Sitesi Yönetimi",
+      "create": "Oy Verme Sitesi Ekle"
+    },
+    "gallery": {
+      "title": "Galeri Yönetimi",
+      "create": "Resim Ekle"
+    },
+    "store": {
+      "title": "Mağaza Yönetimi",
+      "create": "Eşya Ekle"
+    },
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "published": "Yayınlandı",
+    "draft": "Taslak",
+    "featured": "Öne Çıkan",
+    "category": "Kategori",
+    "created": "Oluşturuldu",
+    "coming_soon": "Bu bölüm yakında geliyor...",
+    "edit_form_placeholder": "Düzenleme formu burada uygulanacak..."
+  }
+}

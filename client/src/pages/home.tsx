@@ -31,25 +31,32 @@ export default function Home() {
   return (
     <div className="min-h-screen" data-testid="home-page">
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        {/* Animated Background Elements */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-background/50 to-background"></div>
+          <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/5 to-secondary/5 rounded-full blur-3xl animate-spin-slow"></div>
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-4xl mx-auto">
+          <div className="text-center max-w-5xl mx-auto">
             {/* Server Logo */}
-            <div className="mb-8 flex justify-center">
-              <div className="w-32 h-32 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center animate-float shadow-2xl">
-                <span className="text-white font-gaming text-4xl font-bold">SL</span>
+            <div className="mb-12 flex justify-center">
+              <div className="relative">
+                <div className="w-40 h-40 bg-gradient-to-br from-primary via-primary/80 to-secondary rounded-3xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform duration-300">
+                  <span className="text-white font-gaming text-5xl font-bold drop-shadow-lg">SL</span>
+                </div>
+                {/* Glow Effect */}
+                <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl blur-xl animate-pulse"></div>
               </div>
             </div>
             
-            <h1 className="font-gaming text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent neon-text">
+            <h1 className="font-gaming text-6xl md:text-8xl font-bold mb-8 bg-gradient-to-r from-primary via-purple-600 to-secondary bg-clip-text text-transparent leading-tight">
               {t('server.name')}
             </h1>
             
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-3xl text-muted-foreground/80 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
               {t('server.description')}
             </p>
             
@@ -160,10 +167,10 @@ export default function Home() {
                   
                   {currentSeason.features && Array.isArray(currentSeason.features) && (
                     <div className="space-y-4 mb-8">
-                      {(currentSeason.features as string[]).slice(0, 4).map((feature, index) => (
+                      {currentSeason.features.slice(0, 4).map((feature, index) => (
                         <div key={index} className="flex items-center space-x-3">
                           <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                          <span>{String(feature)}</span>
+                          <span>{typeof feature === 'string' ? feature : JSON.stringify(feature)}</span>
                         </div>
                       ))}
                     </div>

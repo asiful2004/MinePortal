@@ -1,28 +1,37 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+// Import JSON files using ES modules
+import enTranslations from '../locales/en/common.json';
+import bnTranslations from '../locales/bn/common.json';
+import hiTranslations from '../locales/hi/common.json';
+import esTranslations from '../locales/es/common.json';
+import frTranslations from '../locales/fr/common.json';
+import ruTranslations from '../locales/ru/common.json';
+import trTranslations from '../locales/tr/common.json';
+
 // Language resources
 const resources = {
   en: {
-    common: require('../../public/locales/en/common.json')
+    common: enTranslations
   },
   bn: {
-    common: require('../../public/locales/bn/common.json')
+    common: bnTranslations
   },
   hi: {
-    common: require('../../public/locales/hi/common.json')
+    common: hiTranslations
   },
   es: {
-    common: require('../../public/locales/es/common.json')
+    common: esTranslations
   },
   fr: {
-    common: require('../../public/locales/fr/common.json')
+    common: frTranslations
   },
   ru: {
-    common: require('../../public/locales/ru/common.json')
+    common: ruTranslations
   },
   tr: {
-    common: require('../../public/locales/tr/common.json')
+    common: trTranslations
   }
 };
 
@@ -30,7 +39,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: localStorage.getItem('language') || 'en',
+    lng: (typeof window !== 'undefined' && localStorage.getItem('language')) || 'en',
     fallbackLng: 'en',
     defaultNS: 'common',
     interpolation: {
