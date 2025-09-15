@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import jwt from "jsonwebtoken";
 import { insertNewsArticleSchema, insertSeasonSchema, insertTeamMemberSchema, insertVotingSiteSchema, insertGalleryImageSchema, insertStoreItemSchema, insertUserSchema, insertOrderSchema } from "@shared/schema";
+import { z } from "zod";
 import { readdir, stat, unlink } from "fs/promises";
 import { join } from "path";
 import { exec } from "child_process";
@@ -595,15 +596,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Customer Order Creation (Public)
+  // Customer Order Creation (Public) - Security Hardened
   app.post('/api/orders', async (req, res) => {
     try {
-      const validatedData = insertOrderSchema.parse(req.body);
-      const order = await storage.createOrder(validatedData);
-      res.json(order);
+      // Validate customer order input (secure schema)
+      const customerOrderSchema = z.object({
+        customerName: z.string().min(1, "Customer name is required"),
+        customerEmail: z.string().email("Valid email is required"),
+        minecraftUsername: z.string().min(1, "Minecraft username is required"),
+        paymentMethod: z.enum(['paypal', 'stripe', 'crypto']).default('paypal'),
+        items: z.array(z.object({
+          itemId: z.string(),
+          quantity: z.number().min(1).max(100).default(1)
+        })).min(1, "At least one item is required"),
+        notes: z.string().optional()
+      });
+      
+      const validatedInput = customerOrderSchema.parse(req.body);
+      
+      // Get authentic store items from database 
+      const storeItems = await storage.getActiveStoreItems();
+      const storeItemsMap = new Map(storeItems.map(item => [item.id, item]));
+      
+      // Validate items exist and compute authentic total
+      let totalAmount = 0;
+      const orderItems = [];
+      
+      for (const requestItem of validatedInput.items) {
+        const storeItem = storeItemsMap.get(requestItem.itemId);
+        if (!storeItem) {
+          return res.status(400).json({ message: `Item not found: ${requestItem.itemId}` });
+        }
+        
+        // Extract numeric price from "$XX.XX" format
+        const price = parseFloat(storeItem.price.replace('$', ''));
+        if (isNaN(price)) {
+          return res.status(400).json({ message: `Invalid price for item: ${storeItem.name}` });
+        }
+        
+        const itemTotal = price * requestItem.quantity;
+        totalAmount += itemTotal;
+        
+        orderItems.push({
+          id: storeItem.id,
+          name: storeItem.name,
+          price: price,
+          quantity: requestItem.quantity,
+          category: storeItem.category
+        });
+      }
+      
+      // Generate order number
+      const orderNumber = await storage.generateOrderNumber();
+      
+      // Create secure order with server-computed values
+      const secureOrderData = {
+        orderNumber,
+        customerName: validatedInput.customerName,
+        customerEmail: validatedInput.customerEmail,
+        items: JSON.stringify(orderItems),
+        totalAmount: `$${totalAmount.toFixed(2)}`,
+        status: 'pending', // Server-controlled
+        paymentMethod: validatedInput.paymentMethod,
+        paymentStatus: 'pending', // Server-controlled
+        notes: `Minecraft Username: ${validatedInput.minecraftUsername}${validatedInput.notes ? '\n' + validatedInput.notes : ''}`
+      };
+      
+      const order = await storage.createOrder(secureOrderData);
+      res.json({
+        id: order.id,
+        orderNumber: order.orderNumber,
+        totalAmount: order.totalAmount,
+        status: order.status,
+        items: orderItems
+      });
+      
     } catch (error) {
       console.error('Error creating customer order:', error);
-      res.status(500).json({ message: 'Failed to create order' });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: 'Invalid order data', errors: error.errors });
+      } else {
+        res.status(500).json({ message: 'Failed to create order' });
+      }
     }
   });
 

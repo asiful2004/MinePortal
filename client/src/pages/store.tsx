@@ -71,29 +71,24 @@ export default function Store() {
     setCheckoutOpen(true);
   };
 
-  // Handle order submission
+  // Handle order submission (Secure - Server computes prices)
   const handleOrderSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedItem) return;
     
-    const orderData = {
+    const secureOrderData = {
       customerName: orderForm.customerName,
       customerEmail: orderForm.customerEmail,
-      items: JSON.stringify([{
-        id: selectedItem.id,
-        name: selectedItem.name,
-        price: parseFloat(selectedItem.price.replace('$', '')),
-        quantity: 1,
-        category: selectedItem.category
-      }]),
-      totalAmount: selectedItem.price.replace('$', ''),
+      minecraftUsername: orderForm.minecraftUsername,
       paymentMethod: orderForm.paymentMethod,
-      notes: `Minecraft Username: ${orderForm.minecraftUsername}\n${orderForm.notes}`,
-      status: 'pending',
-      paymentStatus: 'pending'
+      items: [{
+        itemId: selectedItem.id,
+        quantity: 1
+      }],
+      notes: orderForm.notes
     };
     
-    createOrderMutation.mutate(orderData);
+    createOrderMutation.mutate(secureOrderData);
   };
 
   const rankItems = storeItems?.filter(item => item.category === 'ranks') || [];
