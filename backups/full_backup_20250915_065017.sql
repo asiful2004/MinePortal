@@ -3,13 +3,14 @@
 --
 
 -- Dumped from database version 16.9 (84ade85)
--- Dumped by pg_dump version 16.9
+-- Dumped by pg_dump version 17.5
 
--- Started on 2025-09-02 17:09:07 UTC
+-- Started on 2025-09-15 06:50:17 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -45,7 +46,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 215 (class 1259 OID 16475)
+-- TOC entry 215 (class 1259 OID 16477)
 -- Name: gallery_images; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -84,7 +85,7 @@ CREATE TABLE public.news_articles (
 
 
 --
--- TOC entry 223 (class 1259 OID 24576)
+-- TOC entry 217 (class 1259 OID 16496)
 -- Name: orders; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -107,7 +108,7 @@ CREATE TABLE public.orders (
 
 
 --
--- TOC entry 217 (class 1259 OID 16498)
+-- TOC entry 218 (class 1259 OID 16508)
 -- Name: seasons; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -127,7 +128,7 @@ CREATE TABLE public.seasons (
 
 
 --
--- TOC entry 218 (class 1259 OID 16509)
+-- TOC entry 219 (class 1259 OID 16517)
 -- Name: server_config; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -145,7 +146,7 @@ CREATE TABLE public.server_config (
 
 
 --
--- TOC entry 219 (class 1259 OID 16524)
+-- TOC entry 220 (class 1259 OID 16530)
 -- Name: store_items; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -165,7 +166,7 @@ CREATE TABLE public.store_items (
 
 
 --
--- TOC entry 220 (class 1259 OID 16537)
+-- TOC entry 221 (class 1259 OID 16541)
 -- Name: team_members; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -182,7 +183,7 @@ CREATE TABLE public.team_members (
 
 
 --
--- TOC entry 221 (class 1259 OID 16548)
+-- TOC entry 222 (class 1259 OID 16550)
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -200,7 +201,7 @@ CREATE TABLE public.users (
 
 
 --
--- TOC entry 222 (class 1259 OID 16562)
+-- TOC entry 223 (class 1259 OID 16560)
 -- Name: voting_sites; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -217,7 +218,7 @@ CREATE TABLE public.voting_sites (
 
 
 --
--- TOC entry 3425 (class 0 OID 16475)
+-- TOC entry 3425 (class 0 OID 16477)
 -- Dependencies: 215
 -- Data for Name: gallery_images; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -239,8 +240,8 @@ COPY public.news_articles (id, title, content, excerpt, category, image_url, aut
 
 
 --
--- TOC entry 3433 (class 0 OID 24576)
--- Dependencies: 223
+-- TOC entry 3427 (class 0 OID 16496)
+-- Dependencies: 217
 -- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -249,8 +250,8 @@ COPY public.orders (id, order_number, customer_id, customer_email, customer_name
 
 
 --
--- TOC entry 3427 (class 0 OID 16498)
--- Dependencies: 217
+-- TOC entry 3428 (class 0 OID 16508)
+-- Dependencies: 218
 -- Data for Name: seasons; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -261,8 +262,8 @@ COPY public.seasons (id, name, description, version, start_date, end_date, is_ac
 
 
 --
--- TOC entry 3428 (class 0 OID 16509)
--- Dependencies: 218
+-- TOC entry 3429 (class 0 OID 16517)
+-- Dependencies: 219
 -- Data for Name: server_config; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -271,8 +272,8 @@ COPY public.server_config (id, name, ip, description, version, max_players, is_o
 
 
 --
--- TOC entry 3429 (class 0 OID 16524)
--- Dependencies: 219
+-- TOC entry 3430 (class 0 OID 16530)
+-- Dependencies: 220
 -- Data for Name: store_items; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -284,8 +285,8 @@ db4bcb65-9a25-42c9-940a-bd9c3b180adf	Money Boost Package	Get a head start with i
 
 
 --
--- TOC entry 3430 (class 0 OID 16537)
--- Dependencies: 220
+-- TOC entry 3431 (class 0 OID 16541)
+-- Dependencies: 221
 -- Data for Name: team_members; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -298,20 +299,20 @@ COPY public.team_members (id, name, role, description, avatar_url, "order", is_a
 
 
 --
--- TOC entry 3431 (class 0 OID 16548)
--- Dependencies: 221
+-- TOC entry 3432 (class 0 OID 16550)
+-- Dependencies: 222
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.users (id, username, password, role, created_at, updated_at, email, avatar_url, is_active) FROM stdin;
-c2cab099-29e3-4dc7-afda-33a6ae65b87b	admin	$2b$10$.LDGztY62xqPHwC.LfUN.eWkUtF1s/9iNChMROfJlfLIJZknG9ol.	admin	2025-09-02 07:41:02.61532	2025-09-02 07:41:02.61532	\N	\N	t
 d44d94a1-379d-46e9-8f8f-11d6f0b11aed	asif	$2b$10$R/V/2qyjmxfgZCIUBS0W2OpWWQPRK8PMZ0cOnoa.bW3pZu5dXsIo2	player	2025-09-02 15:51:47.179125	2025-09-02 15:51:47.179125	asiful2004@yahoo.com	\N	t
+c2cab099-29e3-4dc7-afda-33a6ae65b87b	admin	$2b$10$0SC6no/2lxEnfQP1pWnzuud78IhOEnayWl3MoR4HXUyut.SDYPoOG	admin	2025-09-02 07:41:02.61532	2025-09-02 07:41:02.61532	\N	\N	t
 \.
 
 
 --
--- TOC entry 3432 (class 0 OID 16562)
--- Dependencies: 222
+-- TOC entry 3433 (class 0 OID 16560)
+-- Dependencies: 223
 -- Data for Name: voting_sites; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -323,7 +324,7 @@ fb8694bb-2ea0-42b7-b414-921779317013	MinecraftServers.org	https://minecraftserve
 
 
 --
--- TOC entry 3259 (class 2606 OID 16485)
+-- TOC entry 3259 (class 2606 OID 16570)
 -- Name: gallery_images gallery_images_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -332,7 +333,7 @@ ALTER TABLE ONLY public.gallery_images
 
 
 --
--- TOC entry 3261 (class 2606 OID 16497)
+-- TOC entry 3261 (class 2606 OID 16572)
 -- Name: news_articles news_articles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -341,7 +342,7 @@ ALTER TABLE ONLY public.news_articles
 
 
 --
--- TOC entry 3277 (class 2606 OID 24591)
+-- TOC entry 3263 (class 2606 OID 16574)
 -- Name: orders orders_order_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -350,7 +351,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- TOC entry 3279 (class 2606 OID 24589)
+-- TOC entry 3265 (class 2606 OID 16576)
 -- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -359,7 +360,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- TOC entry 3263 (class 2606 OID 16508)
+-- TOC entry 3267 (class 2606 OID 16578)
 -- Name: seasons seasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -368,7 +369,7 @@ ALTER TABLE ONLY public.seasons
 
 
 --
--- TOC entry 3265 (class 2606 OID 16523)
+-- TOC entry 3269 (class 2606 OID 16580)
 -- Name: server_config server_config_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -377,7 +378,7 @@ ALTER TABLE ONLY public.server_config
 
 
 --
--- TOC entry 3267 (class 2606 OID 16536)
+-- TOC entry 3271 (class 2606 OID 16582)
 -- Name: store_items store_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -386,7 +387,7 @@ ALTER TABLE ONLY public.store_items
 
 
 --
--- TOC entry 3269 (class 2606 OID 16547)
+-- TOC entry 3273 (class 2606 OID 16584)
 -- Name: team_members team_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -395,7 +396,7 @@ ALTER TABLE ONLY public.team_members
 
 
 --
--- TOC entry 3271 (class 2606 OID 16559)
+-- TOC entry 3275 (class 2606 OID 16586)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -404,7 +405,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3273 (class 2606 OID 16561)
+-- TOC entry 3277 (class 2606 OID 16588)
 -- Name: users users_username_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -413,7 +414,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3275 (class 2606 OID 16572)
+-- TOC entry 3279 (class 2606 OID 16590)
 -- Name: voting_sites voting_sites_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -422,7 +423,7 @@ ALTER TABLE ONLY public.voting_sites
 
 
 --
--- TOC entry 3280 (class 2606 OID 16573)
+-- TOC entry 3280 (class 2606 OID 16591)
 -- Name: news_articles news_articles_author_id_users_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -431,7 +432,7 @@ ALTER TABLE ONLY public.news_articles
 
 
 --
--- TOC entry 3281 (class 2606 OID 24593)
+-- TOC entry 3281 (class 2606 OID 16596)
 -- Name: orders orders_customer_id_users_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -439,7 +440,7 @@ ALTER TABLE ONLY public.orders
     ADD CONSTRAINT orders_customer_id_users_id_fk FOREIGN KEY (customer_id) REFERENCES public.users(id);
 
 
--- Completed on 2025-09-02 17:09:16 UTC
+-- Completed on 2025-09-15 06:50:21 UTC
 
 --
 -- PostgreSQL database dump complete
