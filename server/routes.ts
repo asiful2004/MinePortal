@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import jwt from "jsonwebtoken";
 import { insertNewsArticleSchema, insertSeasonSchema, insertTeamMemberSchema, insertVotingSiteSchema, insertGalleryImageSchema, insertStoreItemSchema, insertUserSchema, insertOrderSchema } from "@shared/schema";
-import { readdir, stat } from "fs/promises";
+import { readdir, stat, unlink } from "fs/promises";
 import { join } from "path";
 import { exec } from "child_process";
 import { existsSync, createReadStream } from "fs";
@@ -749,6 +749,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error downloading backup:', error);
       res.status(500).json({ message: 'Failed to download backup' });
+    }
+  });
+
+  app.delete('/api/admin/backups/:filename', authenticateToken, async (req, res) => {
+    try {
+      const { filename } = req.params;
+      
+      // Validate filename to prevent directory traversal
+      if (filename.includes('..') || !filename.endsWith('.sql')) {
+        return res.status(400).json({ message: 'Invalid filename' });
+      }
+      
+      const filePath = join(process.cwd(), 'backups', filename);
+      
+      // Check if file exists
+      if (!existsSync(filePath)) {
+        return res.status(404).json({ message: 'Backup file not found' });
+      }
+      
+      // Delete the backup file
+      await unlink(filePath);
+      
+      res.json({ message: 'Backup deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting backup:', error);
+      res.status(500).json({ message: 'Failed to delete backup' });
+    }
+  });
+
+  app.post('/api/admin/backups/restore/:filename', authenticateToken, async (req, res) => {
+    try {
+      const { filename } = req.params;
+      
+      // Validate filename to prevent directory traversal
+      if (filename.includes('..') || !filename.endsWith('.sql')) {
+        return res.status(400).json({ message: 'Invalid filename' });
+      }
+      
+      const filePath = join(process.cwd(), 'backups', filename);
+      
+      // Check if file exists
+      if (!existsSync(filePath)) {
+        return res.status(404).json({ message: 'Backup file not found' });
+      }
+      
+      // Run the restore script with the backup file
+      const scriptPath = join(process.cwd(), 'scripts', 'restore-backup.sh');
+      
+      exec(`chmod +x ${scriptPath} && echo "yes" | ${scriptPath} "${filePath}"`, (error: any, stdout: string, stderr: string) => {
+        if (error) {
+          console.error('Restore error:', error);
+          console.error('Stderr:', stderr);
+          return res.status(500).json({ message: 'Restore failed', error: error.message });
+        }
+        
+        console.log('Restore stdout:', stdout);
+        res.json({ message: 'Database restored successfully', output: stdout });
+      });
+    } catch (error) {
+      console.error('Error restoring backup:', error);
+      res.status(500).json({ message: 'Failed to restore backup' });
     }
   });
 

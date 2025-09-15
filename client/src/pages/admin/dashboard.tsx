@@ -1091,7 +1091,7 @@ export default function AdminDashboard() {
     </div>
   );
 
-  // Backup Mutation
+  // Backup Mutations
   const createBackupMutation = useMutation({
     mutationFn: async () => {
       const response = await fetch('/api/admin/backups', {
@@ -1104,6 +1104,45 @@ export default function AdminDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/backups'] });
       toast({ title: 'Success', description: 'Database backup created successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const deleteBackupMutation = useMutation({
+    mutationFn: async (filename: string) => {
+      const response = await fetch(`/api/admin/backups/${filename}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to delete backup');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/backups'] });
+      toast({ title: 'Success', description: 'Backup deleted successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const restoreBackupMutation = useMutation({
+    mutationFn: async (filename: string) => {
+      const response = await fetch(`/api/admin/backups/restore/${filename}`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error('Failed to restore backup');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: 'Success', description: 'Database restored successfully! The page will reload in 3 seconds.', variant: 'default' });
+      // Reload the page after a few seconds to show the restored data
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     },
     onError: (error) => {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
@@ -1632,12 +1671,42 @@ export default function AdminDashboard() {
                         Size: {(backup.size / (1024 * 1024)).toFixed(2)} MB
                       </p>
                     </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => window.open(backup.downloadUrl, '_blank')}
-                    >
-                      Download
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(backup.downloadUrl, '_blank')}
+                        data-testid={`button-download-backup-${backup.name}`}
+                      >
+                        Download
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm('Are you sure you want to restore from this backup? This will replace all current data!')) {
+                            restoreBackupMutation.mutate(backup.name);
+                          }
+                        }}
+                        disabled={restoreBackupMutation.isPending}
+                        data-testid={`button-restore-backup-${backup.name}`}
+                      >
+                        {restoreBackupMutation.isPending ? 'Restoring...' : 'Restore'}
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm('Are you sure you want to delete this backup? This action cannot be undone!')) {
+                            deleteBackupMutation.mutate(backup.name);
+                          }
+                        }}
+                        disabled={deleteBackupMutation.isPending}
+                        data-testid={`button-delete-backup-${backup.name}`}
+                      >
+                        {deleteBackupMutation.isPending ? 'Deleting...' : 'Delete'}
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
