@@ -661,6 +661,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Backup management routes
+  app.get('/api/admin/backups', authenticateToken, async (req, res) => {
+    try {
+      const { readdir, stat } = require('fs').promises;
+      const path = require('path');
+      const backupDir = 'backups';
+      
+      // Check if backups directory exists
+      try {
+        const files = await readdir(backupDir);
+        const backupFiles = files.filter((file: string) => file.endsWith('.sql'));
+        
+        const backups = await Promise.all(
+          backupFiles.map(async (file: string) => {
+            const filePath = path.join(backupDir, file);
+            const stats = await stat(filePath);
+            return {
+              name: file,
+              created: stats.mtime,
+              size: stats.size,
+              downloadUrl: `/api/admin/backups/download/${file}`
+            };
+          })
+        );
+        
+        // Sort by creation time (newest first)
+        backups.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+        
+        res.json(backups);
+      } catch (error) {
+        // Return empty array if backups directory doesn't exist
+        res.json([]);
+      }
+    } catch (error) {
+      console.error('Error fetching backups:', error);
+      res.status(500).json({ message: 'Failed to fetch backups' });
+    }
+  });
+
+  app.post('/api/admin/backups', authenticateToken, async (req, res) => {
+    try {
+      const { exec } = require('child_process');
+      const path = require('path');
+      
+      // Run the backup script
+      const scriptPath = path.join(process.cwd(), 'scripts', 'full-backup.sh');
+      
+      exec(`chmod +x ${scriptPath} && ${scriptPath}`, (error: any, stdout: string, stderr: string) => {
+        if (error) {
+          console.error('Backup error:', error);
+          console.error('Stderr:', stderr);
+          return res.status(500).json({ message: 'Backup failed', error: error.message });
+        }
+        
+        console.log('Backup stdout:', stdout);
+        res.json({ message: 'Backup created successfully', output: stdout });
+      });
+    } catch (error) {
+      console.error('Error creating backup:', error);
+      res.status(500).json({ message: 'Failed to create backup' });
+    }
+  });
+
+  app.get('/api/admin/backups/download/:filename', authenticateToken, async (req, res) => {
+    try {
+      const { filename } = req.params;
+      const path = require('path');
+      const fs = require('fs');
+      
+      // Validate filename to prevent directory traversal
+      if (filename.includes('..') || !filename.endsWith('.sql')) {
+        return res.status(400).json({ message: 'Invalid filename' });
+      }
+      
+      const filePath = path.join(process.cwd(), 'backups', filename);
+      
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: 'Backup file not found' });
+      }
+      
+      // Set headers for file download
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      
+      // Stream the file
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
+    } catch (error) {
+      console.error('Error downloading backup:', error);
+      res.status(500).json({ message: 'Failed to download backup' });
+    }
+  });
+
   // Registration endpoint
   app.post('/api/auth/register', async (req, res) => {
     try {
