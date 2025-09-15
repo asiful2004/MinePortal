@@ -3,6 +3,10 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import jwt from "jsonwebtoken";
 import { insertNewsArticleSchema, insertSeasonSchema, insertTeamMemberSchema, insertVotingSiteSchema, insertGalleryImageSchema, insertStoreItemSchema, insertUserSchema, insertOrderSchema } from "@shared/schema";
+import { readdir, stat } from "fs/promises";
+import { join } from "path";
+import { exec } from "child_process";
+import { existsSync, createReadStream } from "fs";
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -664,8 +668,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Backup management routes
   app.get('/api/admin/backups', authenticateToken, async (req, res) => {
     try {
-      const { readdir, stat } = require('fs').promises;
-      const path = require('path');
       const backupDir = 'backups';
       
       // Check if backups directory exists
@@ -675,7 +677,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         const backups = await Promise.all(
           backupFiles.map(async (file: string) => {
-            const filePath = path.join(backupDir, file);
+            const filePath = join(backupDir, file);
             const stats = await stat(filePath);
             return {
               name: file,
@@ -702,11 +704,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/backups', authenticateToken, async (req, res) => {
     try {
-      const { exec } = require('child_process');
-      const path = require('path');
-      
       // Run the backup script
-      const scriptPath = path.join(process.cwd(), 'scripts', 'full-backup.sh');
+      const scriptPath = join(process.cwd(), 'scripts', 'full-backup.sh');
       
       exec(`chmod +x ${scriptPath} && ${scriptPath}`, (error: any, stdout: string, stderr: string) => {
         if (error) {
@@ -727,18 +726,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/admin/backups/download/:filename', authenticateToken, async (req, res) => {
     try {
       const { filename } = req.params;
-      const path = require('path');
-      const fs = require('fs');
       
       // Validate filename to prevent directory traversal
       if (filename.includes('..') || !filename.endsWith('.sql')) {
         return res.status(400).json({ message: 'Invalid filename' });
       }
       
-      const filePath = path.join(process.cwd(), 'backups', filename);
+      const filePath = join(process.cwd(), 'backups', filename);
       
       // Check if file exists
-      if (!fs.existsSync(filePath)) {
+      if (!existsSync(filePath)) {
         return res.status(404).json({ message: 'Backup file not found' });
       }
       
@@ -747,7 +744,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
       
       // Stream the file
-      const fileStream = fs.createReadStream(filePath);
+      const fileStream = createReadStream(filePath);
       fileStream.pipe(res);
     } catch (error) {
       console.error('Error downloading backup:', error);
