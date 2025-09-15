@@ -930,9 +930,65 @@ export default function AdminDashboard() {
     );
   };
 
-  // Users Management
+  // Quick status update mutation
+  const updateOrderStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string, status: string }) => {
+      const response = await fetch(`/api/admin/orders/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+      });
+      if (!response.ok) throw new Error('Failed to update order status');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
+      toast({ title: 'Success', description: 'Order status updated successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  // Order status helpers
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case 'completed': return 'default';
+      case 'processing': return 'secondary';
+      case 'pending': return 'outline';
+      case 'cancelled': return 'destructive';
+      case 'refunded': return 'destructive';
+      default: return 'secondary';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'text-green-600';
+      case 'processing': return 'text-blue-600';
+      case 'pending': return 'text-yellow-600';
+      case 'cancelled': return 'text-red-600';
+      case 'refunded': return 'text-gray-600';
+      default: return 'text-gray-600';
+    }
+  };
+
+  // Orders stats
+  const orderStats = {
+    total: orders.length,
+    pending: orders.filter(o => o.status === 'pending').length,
+    processing: orders.filter(o => o.status === 'processing').length,
+    completed: orders.filter(o => o.status === 'completed').length,
+    cancelled: orders.filter(o => o.status === 'cancelled').length,
+    totalRevenue: orders
+      .filter(o => o.status === 'completed')
+      .reduce((sum, o) => sum + parseFloat(o.totalAmount), 0)
+  };
+
+  // Orders Management with WooCommerce-style interface
   const renderOrdersTab = () => (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Header with stats */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Order Management</h3>
         <Button 
@@ -947,67 +1003,187 @@ export default function AdminDashboard() {
         </Button>
       </div>
 
-      <div className="grid gap-4">
-        {orders.map((order: Order) => (
-          <Card key={order.id}>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <ShoppingCart className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-primary">{order.orderNumber}</h4>
-                    <p className="text-sm text-muted-foreground">{order.customerName} - {order.customerEmail}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant={order.status === 'completed' ? 'default' : order.status === 'pending' ? 'secondary' : 'destructive'}>
-                        {order.status}
-                      </Badge>
-                      <Badge variant="outline">
-                        ${parseFloat(order.totalAmount).toFixed(2)}
-                      </Badge>
-                      <Badge variant="outline">
+      {/* Order Stats Dashboard */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-primary">{orderStats.total}</div>
+            <div className="text-sm text-muted-foreground">Total Orders</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-yellow-600">{orderStats.pending}</div>
+            <div className="text-sm text-muted-foreground">Pending</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-600">{orderStats.processing}</div>
+            <div className="text-sm text-muted-foreground">Processing</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-green-600">{orderStats.completed}</div>
+            <div className="text-sm text-muted-foreground">Completed</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-primary">${orderStats.totalRevenue.toFixed(2)}</div>
+            <div className="text-sm text-muted-foreground">Revenue</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Orders List */}
+      <div className="space-y-4">
+        {orders.length === 0 ? (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <ShoppingCart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No orders yet</h3>
+              <p className="text-muted-foreground mb-4">Orders will appear here when customers make purchases</p>
+              <Button onClick={() => { setEditingOrder(null); setShowOrderDialog(true); }}>
+                Create First Order
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          orders.map((order: Order) => (
+            <Card key={order.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4 flex-1">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <ShoppingCart className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h4 className="font-semibold text-lg">{order.orderNumber}</h4>
+                        <Badge variant={getStatusVariant(order.status)} className={getStatusColor(order.status)}>
+                          {order.status.toUpperCase()}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <p className="font-medium text-muted-foreground">Customer</p>
+                          <p className="font-semibold">{order.customerName}</p>
+                          <p className="text-muted-foreground">{order.customerEmail}</p>
+                        </div>
+                        <div>
+                          <p className="font-medium text-muted-foreground">Order Details</p>
+                          <p className="font-semibold">${parseFloat(order.totalAmount).toFixed(2)}</p>
+                          <p className="text-muted-foreground">
+                            {(() => {
+                              try {
+                                const items = JSON.parse(order.items as string);
+                                return Array.isArray(items) ? `${items.length} item(s)` : 'Order items';
+                              } catch {
+                                return 'Order items';
+                              }
+                            })()}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="font-medium text-muted-foreground">Date</p>
+                          <p className="font-semibold">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
+                          <p className="text-muted-foreground">{order.createdAt ? new Date(order.createdAt).toLocaleTimeString() : 'N/A'}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Order Items Preview */}
+                      <div className="mt-4 p-3 bg-muted/20 rounded-lg">
+                        <p className="text-sm font-medium mb-2">Items:</p>
                         {(() => {
                           try {
                             const items = JSON.parse(order.items as string);
-                            return Array.isArray(items) ? `${items.length} item(s)` : 'Order items';
+                            return Array.isArray(items) ? (
+                              <div className="space-y-1">
+                                {items.map((item: any, index: number) => (
+                                  <div key={index} className="flex justify-between text-sm">
+                                    <span>{item.name || item.title || 'Item'} x{item.quantity || 1}</span>
+                                    <span>${(item.price || 0).toFixed(2)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : <p className="text-sm text-muted-foreground">No items data</p>;
                           } catch {
-                            return 'Order items';
+                            return <p className="text-sm text-muted-foreground">Invalid items format</p>;
                           }
                         })()}
-                      </Badge>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex flex-col gap-2 ml-4">
+                    {/* Quick Status Updates */}
+                    <div className="flex gap-1">
+                      {order.status === 'pending' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateOrderStatusMutation.mutate({ id: order.id, status: 'processing' })}
+                          data-testid={`button-process-order-${order.id}`}
+                        >
+                          Process
+                        </Button>
+                      )}
+                      {(order.status === 'pending' || order.status === 'processing') && (
+                        <Button
+                          size="sm"
+                          onClick={() => updateOrderStatusMutation.mutate({ id: order.id, status: 'completed' })}
+                          data-testid={`button-complete-order-${order.id}`}
+                        >
+                          Complete
+                        </Button>
+                      )}
+                      {order.status !== 'cancelled' && order.status !== 'completed' && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => updateOrderStatusMutation.mutate({ id: order.id, status: 'cancelled' })}
+                          data-testid={`button-cancel-order-${order.id}`}
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {/* Edit/Delete */}
+                    <div className="flex gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditingOrder(order);
+                          setShowOrderDialog(true);
+                        }}
+                        data-testid={`button-edit-order-${order.id}`}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm('Are you sure you want to delete this order?')) {
+                            deleteOrderMutation.mutate(order.id);
+                          }
+                        }}
+                        data-testid={`button-delete-order-${order.id}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setEditingOrder(order);
-                      setShowOrderDialog(true);
-                    }}
-                    data-testid={`button-edit-order-${order.id}`}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => {
-                      if (confirm('Are you sure you want to delete this order?')) {
-                        deleteOrderMutation.mutate(order.id);
-                      }
-                    }}
-                    data-testid={`button-delete-order-${order.id}`}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );
