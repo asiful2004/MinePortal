@@ -595,6 +595,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Customer Order Creation (Public)
+  app.post('/api/orders', async (req, res) => {
+    try {
+      const validatedData = insertOrderSchema.parse(req.body);
+      const order = await storage.createOrder(validatedData);
+      res.json(order);
+    } catch (error) {
+      console.error('Error creating customer order:', error);
+      res.status(500).json({ message: 'Failed to create order' });
+    }
+  });
+
   // Orders Management Routes
   app.get('/api/admin/orders', authenticateToken, async (req, res) => {
     try {

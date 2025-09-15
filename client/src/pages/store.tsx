@@ -1,20 +1,100 @@
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
-import { Star, Crown, Gem, Zap, Key, Palette, Filter } from 'lucide-react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Star, Crown, Gem, Zap, Key, Palette, Filter, ShoppingCart, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import type { StoreItem } from '@shared/schema';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 
 export default function Store() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [orderForm, setOrderForm] = useState({
+    customerName: '',
+    customerEmail: '',
+    minecraftUsername: '',
+    paymentMethod: 'paypal',
+    notes: ''
+  });
   
   const { data: storeItems, isLoading } = useQuery<StoreItem[]>({
     queryKey: ['/api/store/items'],
   });
+
+  // Order creation mutation
+  const createOrderMutation = useMutation({
+    mutationFn: async (orderData: any) => {
+      return apiRequest('/api/orders', {
+        method: 'POST',
+        body: JSON.stringify(orderData),
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Order Created!',
+        description: 'Your order has been successfully created. You will receive a confirmation email shortly.',
+      });
+      setCheckoutOpen(false);
+      setSelectedItem(null);
+      setOrderForm({
+        customerName: '',
+        customerEmail: '',
+        minecraftUsername: '',
+        paymentMethod: 'paypal',
+        notes: ''
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Order Failed',
+        description: error.message || 'There was an error creating your order. Please try again.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Handle purchase button click
+  const handlePurchase = (item: StoreItem) => {
+    setSelectedItem(item);
+    setCheckoutOpen(true);
+  };
+
+  // Handle order submission
+  const handleOrderSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedItem) return;
+    
+    const orderData = {
+      customerName: orderForm.customerName,
+      customerEmail: orderForm.customerEmail,
+      items: JSON.stringify([{
+        id: selectedItem.id,
+        name: selectedItem.name,
+        price: parseFloat(selectedItem.price.replace('$', '')),
+        quantity: 1,
+        category: selectedItem.category
+      }]),
+      totalAmount: selectedItem.price.replace('$', ''),
+      paymentMethod: orderForm.paymentMethod,
+      notes: `Minecraft Username: ${orderForm.minecraftUsername}\n${orderForm.notes}`,
+      status: 'pending',
+      paymentStatus: 'pending'
+    };
+    
+    createOrderMutation.mutate(orderData);
+  };
 
   const rankItems = storeItems?.filter(item => item.category === 'ranks') || [];
   const itemItems = storeItems?.filter(item => item.category === 'items') || [];
@@ -173,7 +253,9 @@ export default function Store() {
                             <Button 
                               className={`w-full btn-gaming`}
                               data-testid={`purchase-rank-${rank.id}`}
+                              onClick={() => handlePurchase(rank)}
                             >
+                              <ShoppingCart className="w-4 h-4 mr-2" />
                               {t('store.purchase')} {rank.name}
                             </Button>
                           </CardContent>
@@ -221,7 +303,9 @@ export default function Store() {
                             <Button 
                               className="w-full btn-gaming text-sm"
                               data-testid={`purchase-item-${item.id}`}
+                              onClick={() => handlePurchase(item)}
                             >
+                              <ShoppingCart className="w-4 h-4 mr-2" />
                               {t('store.buy_now')}
                             </Button>
                           </CardContent>
@@ -269,7 +353,9 @@ export default function Store() {
                             <Button 
                               className="w-full btn-gaming text-sm"
                               data-testid={`purchase-key-${item.id}`}
+                              onClick={() => handlePurchase(item)}
                             >
+                              <ShoppingCart className="w-4 h-4 mr-2" />
                               {t('store.buy_now')}
                             </Button>
                           </CardContent>
@@ -317,7 +403,9 @@ export default function Store() {
                             <Button 
                               className="w-full btn-gaming text-sm"
                               data-testid={`purchase-cosmetic-${item.id}`}
+                              onClick={() => handlePurchase(item)}
                             >
+                              <ShoppingCart className="w-4 h-4 mr-2" />
                               {t('store.buy_now')}
                             </Button>
                           </CardContent>
@@ -348,6 +436,128 @@ export default function Store() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Checkout Dialog */}
+        <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>
+          <DialogContent className="max-w-md mx-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Complete Your Purchase
+              </DialogTitle>
+              <DialogDescription>
+                {selectedItem && (
+                  <div className="p-3 bg-muted/20 rounded-lg mt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">{selectedItem.name}</span>
+                      <span className="text-primary font-bold">{selectedItem.price}</span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Category: {selectedItem.category}
+                    </div>
+                  </div>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <form onSubmit={handleOrderSubmit} className="space-y-4 mt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="customer-name">Full Name *</Label>
+                  <Input
+                    id="customer-name"
+                    value={orderForm.customerName}
+                    onChange={(e) => setOrderForm(prev => ({ ...prev, customerName: e.target.value }))}
+                    placeholder="John Doe"
+                    required
+                    data-testid="input-customer-name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="customer-email">Email *</Label>
+                  <Input
+                    id="customer-email"
+                    type="email"
+                    value={orderForm.customerEmail}
+                    onChange={(e) => setOrderForm(prev => ({ ...prev, customerEmail: e.target.value }))}
+                    placeholder="john@example.com"
+                    required
+                    data-testid="input-customer-email"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="minecraft-username">Minecraft Username *</Label>
+                <Input
+                  id="minecraft-username"
+                  value={orderForm.minecraftUsername}
+                  onChange={(e) => setOrderForm(prev => ({ ...prev, minecraftUsername: e.target.value }))}
+                  placeholder="MinecraftPlayer123"
+                  required
+                  data-testid="input-minecraft-username"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="payment-method">Payment Method</Label>
+                <Select value={orderForm.paymentMethod} onValueChange={(value) => setOrderForm(prev => ({ ...prev, paymentMethod: value }))}>
+                  <SelectTrigger data-testid="select-payment-method">
+                    <SelectValue placeholder="Select payment method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="paypal">PayPal</SelectItem>
+                    <SelectItem value="stripe">Credit Card (Stripe)</SelectItem>
+                    <SelectItem value="crypto">Cryptocurrency</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="order-notes">Additional Notes (Optional)</Label>
+                <Textarea
+                  id="order-notes"
+                  value={orderForm.notes}
+                  onChange={(e) => setOrderForm(prev => ({ ...prev, notes: e.target.value }))}
+                  placeholder="Any special instructions or requests..."
+                  rows={3}
+                  data-testid="textarea-order-notes"
+                />
+              </div>
+              
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCheckoutOpen(false)}
+                  className="flex-1"
+                  data-testid="button-cancel-checkout"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1"
+                  disabled={createOrderMutation.isPending}
+                  data-testid="button-submit-order"
+                >
+                  {createOrderMutation.isPending ? (
+                    <>Processing...</>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      Place Order
+                    </>
+                  )}
+                </Button>
+              </div>
+              
+              <div className="text-xs text-muted-foreground text-center pt-2">
+                You will receive an email confirmation once your order is processed.
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
